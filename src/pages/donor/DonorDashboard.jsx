@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Droplets, Heart, Award, Bell, CheckCircle, TrendingUp, Users, Clock } from 'lucide-react'
 import Sidebar from '../../components/Sidebar'
@@ -7,6 +7,7 @@ import {
   PageEnter, BloodBadge, StatCard, GlassCard, Toggle, SectionTitle,
   RequestCard, NotifItem, AchievementBadge, UrgencyTag
 } from '../../components/UI'
+import { useAuth } from '../../contexts/AuthContext'
 
 const nearbyRequests = [
   { id: 1, bloodType: 'B+', distance: '0.8 km', urgency: 'critical', hospital: 'Apollo Mumbai', time: '2 min ago' },
@@ -35,6 +36,16 @@ export default function DonorDashboard() {
   const [requests, setRequests] = useState(nearbyRequests)
   const [accepted, setAccepted] = useState([])
   const [modalOpen, setModalOpen] = useState(false)
+  const { profile } = useAuth()
+
+  const displayName = profile?.name || 'Donor'
+  const displayLocation = profile?.location || '—'
+  const displayBloodGroup = profile?.bloodGroup || '—'
+  const initials = useMemo(() => {
+    const parts = (profile?.name || '').trim().split(/\s+/).filter(Boolean)
+    if (parts.length === 0) return 'RS'
+    return parts.slice(0, 2).map(p => p[0].toUpperCase()).join('')
+  }, [profile?.name])
 
   const handleAccept = (id) => {
     const req = requests.find(r => r.id === id)
@@ -85,20 +96,20 @@ export default function DonorDashboard() {
               {/* Avatar */}
               <div className="relative">
                 <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blood-500 to-blood-700 flex items-center justify-center font-syne font-black text-2xl text-white">
-                  RS
+                  {initials}
                 </div>
                 <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-black ${available ? 'bg-green-400' : 'bg-white/30'}`} />
               </div>
 
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-1 flex-wrap">
-                  <h2 className="font-syne text-xl font-bold text-white">Rahul Sharma</h2>
-                  <BloodBadge type="B+" glow />
+                  <h2 className="font-syne text-xl font-bold text-white">{displayName}</h2>
+                  <BloodBadge type={displayBloodGroup} glow />
                   <span className="flex items-center gap-1 text-xs bg-green-500/20 text-green-400 border border-green-500/30 px-2 py-0.5 rounded-full">
                     <CheckCircle size={10} /> Verified
                   </span>
                 </div>
-                <p className="text-white/40 text-sm">📍 Andheri West, Mumbai · Donor since Jan 2023</p>
+                <p className="text-white/40 text-sm">📍 {displayLocation}</p>
               </div>
 
               <div className="grid grid-cols-3 gap-3 md:gap-6 text-center">

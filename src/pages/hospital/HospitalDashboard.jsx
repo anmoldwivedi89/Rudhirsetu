@@ -65,7 +65,9 @@ export default function HospitalDashboard() {
           <div className="sticky top-0 z-30 glass border-b border-white/5 px-4 md:px-6 py-4 flex flex-wrap items-center justify-between gap-3">
             <div>
               <h1 className="font-syne font-bold text-white text-xl">Hospital Command Center</h1>
-              <p className="text-white/40 text-xs">Apollo Hospitals Mumbai · Dr. Verma (Admin)</p>
+              <p className="text-white/40 text-xs">
+                {profile?.name || 'Hospital'}{profile?.location ? ` · ${profile.location}` : ''}
+              </p>
             </div>
             <div className="flex items-center gap-2 md:gap-3 flex-wrap">
               <Link to="/hospital/create-request">
@@ -148,23 +150,20 @@ export default function HospitalDashboard() {
             {/* Donor Approval */}
             <SectionTitle sub="Confirm or reject incoming donors">Donor Approvals</SectionTitle>
             <div className="flex flex-col gap-3">
-              {[
-                { name: 'Rahul Sharma', blood: 'O-', dist: '0.8 km', req: 'Emergency Surgery' },
-                { name: 'Priya Mehta', blood: 'B+', dist: '2.1 km', req: 'Scheduled Transfusion' },
-              ].map((d, i) => (
+              {donors.slice(0, 2).map((d, i) => (
                 <motion.div
-                  key={d.name}
+                  key={d.id}
                   initial={{ opacity: 0, x: -16 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.1 }}
                   className="glass rounded-xl p-4 flex items-center gap-4"
                 >
                   <div className="w-10 h-10 rounded-xl bg-blood-500/20 border border-blood-500/30 flex items-center justify-center font-syne font-bold text-blood-400 text-sm">
-                    {d.name.split(' ').map(n => n[0]).join('')}
+                    {(d.name || 'Donor').split(' ').filter(Boolean).slice(0, 2).map(n => n[0]).join('')}
                   </div>
                   <div className="flex-1">
-                    <p className="text-white font-medium text-sm">{d.name}</p>
-                    <p className="text-white/40 text-xs">{d.blood} · {d.dist} · For: {d.req}</p>
+                    <p className="text-white font-medium text-sm">{d.name || 'Unnamed Donor'}</p>
+                    <p className="text-white/40 text-xs">{d.bloodGroup || '—'} · {d.location || '—'}</p>
                   </div>
                   <div className="flex gap-2">
                     <motion.button whileTap={{ scale: 0.95 }} className="text-xs px-3 py-1.5 rounded-lg glass text-white/40 hover:text-red-400 transition-colors">
@@ -180,6 +179,11 @@ export default function HospitalDashboard() {
                   </div>
                 </motion.div>
               ))}
+              {donors.length === 0 && (
+                <GlassCard className="p-5 border border-white/10">
+                  <p className="text-white/40 text-sm">No donors available yet.</p>
+                </GlassCard>
+              )}
             </div>
 
             {/* Available Donors */}
