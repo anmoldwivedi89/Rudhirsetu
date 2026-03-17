@@ -83,7 +83,7 @@ export default function CreateRequest() {
 
   return (
     <PageEnter>
-      <div className="flex min-h-screen bg-[#0a0a0a]">
+      <div className="flex min-h-screen bg-[#0a0a0a] overflow-x-hidden">
         <Sidebar role="hospital" />
         <main className="flex-1 p-4 md:p-6 pt-18 md:pt-6">
           <div className="max-w-xl">
@@ -171,7 +171,7 @@ export default function CreateRequest() {
                     <MapPin size={15} className="absolute left-3.5 top-3.5 text-blood-400" />
                     <input
                       type="text"
-                      defaultValue="Apollo Hospitals, Bandra West, Mumbai — 19.0510° N, 72.8311° E"
+                      value={profile?.location || 'Add location in your hospital profile'}
                       readOnly
                       className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-3 text-white/60 text-sm outline-none"
                     />

@@ -20,7 +20,7 @@ const stages = [
 export default function RequestTracking() {
   return (
     <PageEnter>
-      <div className="flex min-h-screen bg-[#0a0a0a]">
+      <div className="flex min-h-screen bg-[#0a0a0a] overflow-x-hidden">
         <Sidebar role="hospital" />
         <main className="flex-1 p-4 md:p-6 pt-18 md:pt-6">
           <div className="max-w-3xl">

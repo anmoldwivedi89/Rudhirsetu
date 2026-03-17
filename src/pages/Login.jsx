@@ -5,7 +5,7 @@ import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react'
 import { PageEnter, PrimaryBtn } from '../components/UI'
 import { auth, db } from '../firebase'
 import { signInWithEmailAndPassword } from 'firebase/auth'
-import { doc, getDoc } from 'firebase/firestore'
+import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore'
 import { cacheUserRole, getCachedUserRole, getDashboardPath } from '../lib/roles'
 import LogoMark from '../components/LogoMark'
 
@@ -24,9 +24,21 @@ export default function Login() {
     setError('')
     try {
       const cred = await signInWithEmailAndPassword(auth, email, password)
-      const snap = await getDoc(doc(db, 'users', cred.user.uid))
+      const userRef = doc(db, 'users', cred.user.uid)
+      const snap = await getDoc(userRef)
       const storedRole = snap.exists() ? snap.data()?.role : null
       const finalRole = storedRole || getCachedUserRole(cred.user.uid) || role
+
+      // If profile is missing (older accounts / rules blocked earlier), create it now.
+      if (!snap.exists()) {
+        await setDoc(userRef, {
+          role: finalRole,
+          email: cred.user.email || email || null,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        }, { merge: true })
+      }
+
       cacheUserRole(cred.user.uid, finalRole)
       navigate(getDashboardPath(finalRole), { replace: true })
     } catch (err) {

@@ -16,9 +16,12 @@ export default function Register() {
   const [role, setRole] = useState('donor')
   const [step, setStep] = useState(1)
   const [bloodGroup, setBloodGroup] = useState('')
+  const [availableBloodGroups, setAvailableBloodGroups] = useState([])
+  const [geo, setGeo] = useState(null) // {lat, lng}
   const [loading, setLoading] = useState(false)
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
+  const [hospitalName, setHospitalName] = useState('')
   const [phone, setPhone] = useState('')
   const [location, setLocation] = useState('')
   const [email, setEmail] = useState('')
@@ -26,7 +29,23 @@ export default function Register() {
   const [error, setError] = useState('')
   const navigate = useNavigate()
 
-  const fullName = useMemo(() => `${firstName} ${lastName}`.trim(), [firstName, lastName])
+  const fullName = useMemo(() => {
+    if (role === ROLES.hospital) return hospitalName.trim()
+    return `${firstName} ${lastName}`.trim()
+  }, [firstName, lastName, hospitalName, role])
+
+  const toggleAvailBg = (bg) => {
+    setAvailableBloodGroups(prev => prev.includes(bg) ? prev.filter(x => x !== bg) : [...prev, bg])
+  }
+
+  const captureGeo = async () => {
+    if (!navigator.geolocation) return
+    navigator.geolocation.getCurrentPosition(
+      (p) => setGeo({ lat: p.coords.latitude, lng: p.coords.longitude }),
+      () => {},
+      { enableHighAccuracy: true, timeout: 10000 },
+    )
+  }
 
   const handleNext = async () => {
     if (step < 2) { setStep(2); return }
@@ -48,6 +67,8 @@ export default function Register() {
         phone: phone || null,
         location: location || null,
         bloodGroup: safeRole === ROLES.donor ? (bloodGroup || null) : null,
+        availableBloodGroups: safeRole === ROLES.hospital ? (availableBloodGroups.length ? availableBloodGroups : null) : null,
+        geo: safeRole === ROLES.hospital ? (geo || null) : null,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       }, { merge: true })
@@ -131,31 +152,48 @@ export default function Register() {
                   exit={{ opacity: 0, x: -20 }}
                   className="flex flex-col gap-4"
                 >
-                  <div className="grid grid-cols-2 gap-3">
+                  {role === ROLES.hospital ? (
                     <div>
-                      <label className="text-white/50 text-xs mb-1.5 block">FIRST NAME</label>
+                      <label className="text-white/50 text-xs mb-1.5 block">HOSPITAL NAME</label>
                       <div className="relative">
                         <User size={14} className="absolute left-3 top-3.5 text-white/30" />
                         <input
                           type="text"
-                          placeholder="Rahul"
-                          value={firstName}
-                          onChange={(e) => setFirstName(e.target.value)}
+                          placeholder="Apollo Hospitals"
+                          value={hospitalName}
+                          onChange={(e) => setHospitalName(e.target.value)}
                           className="w-full bg-white/5 border border-white/10 focus:border-blood-500/50 rounded-xl pl-9 pr-3 py-3 text-white text-sm outline-none placeholder:text-white/20 transition-colors"
                         />
                       </div>
+                      <p className="text-white/30 text-xs mt-1">For hospitals, a single name is enough.</p>
                     </div>
-                    <div>
-                      <label className="text-white/50 text-xs mb-1.5 block">LAST NAME</label>
-                      <input
-                        type="text"
-                        placeholder="Sharma"
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        className="w-full bg-white/5 border border-white/10 focus:border-blood-500/50 rounded-xl px-3 py-3 text-white text-sm outline-none placeholder:text-white/20 transition-colors"
-                      />
+                  ) : (
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-white/50 text-xs mb-1.5 block">FIRST NAME</label>
+                        <div className="relative">
+                          <User size={14} className="absolute left-3 top-3.5 text-white/30" />
+                          <input
+                            type="text"
+                            placeholder="Rahul"
+                            value={firstName}
+                            onChange={(e) => setFirstName(e.target.value)}
+                            className="w-full bg-white/5 border border-white/10 focus:border-blood-500/50 rounded-xl pl-9 pr-3 py-3 text-white text-sm outline-none placeholder:text-white/20 transition-colors"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="text-white/50 text-xs mb-1.5 block">LAST NAME</label>
+                        <input
+                          type="text"
+                          placeholder="Sharma"
+                          value={lastName}
+                          onChange={(e) => setLastName(e.target.value)}
+                          className="w-full bg-white/5 border border-white/10 focus:border-blood-500/50 rounded-xl px-3 py-3 text-white text-sm outline-none placeholder:text-white/20 transition-colors"
+                        />
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   <div>
                     <label className="text-white/50 text-xs mb-1.5 block">EMAIL</label>
@@ -209,12 +247,50 @@ export default function Register() {
                     </div>
                   )}
 
+                  {role === ROLES.hospital && (
+                    <div>
+                      <label className="text-white/50 text-xs mb-2 block">AVAILABLE BLOOD GROUPS</label>
+                      <div className="grid grid-cols-4 gap-2">
+                        {bloodGroups.map(bg => (
+                          <motion.button
+                            key={bg}
+                            type="button"
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => toggleAvailBg(bg)}
+                            className={`py-2 rounded-xl border font-syne font-bold text-sm transition-all ${
+                              availableBloodGroups.includes(bg)
+                                ? 'bg-blood-500/30 border-blood-500 text-blood-300 glow-red-sm'
+                                : 'glass border-white/10 text-white/60 hover:border-white/20'
+                            }`}
+                          >
+                            {bg}
+                          </motion.button>
+                        ))}
+                      </div>
+                      <div className="mt-3 flex items-center justify-between gap-3">
+                        <p className="text-white/30 text-xs">
+                          {geo ? `📍 Geo saved: ${geo.lat.toFixed(4)}, ${geo.lng.toFixed(4)}` : '📍 Geo not set (optional)'}
+                        </p>
+                        <motion.button
+                          type="button"
+                          whileTap={{ scale: 0.97 }}
+                          onClick={captureGeo}
+                          className="text-xs px-3 py-2 rounded-xl glass border border-white/10 text-white/60 hover:text-white transition-colors"
+                        >
+                          Use my location
+                        </motion.button>
+                      </div>
+                    </div>
+                  )}
+
                   <div>
                     <label className="text-white/50 text-xs mb-1.5 block">CITY / LOCATION</label>
                     <div className="relative">
                       <MapPin size={14} className="absolute left-3 top-3.5 text-white/30" />
                       <input
                         type="text"
+                        name="rs_location"
+                        autoComplete="off"
                         placeholder="Mumbai, Maharashtra"
                         value={location}
                         onChange={(e) => setLocation(e.target.value)}
@@ -227,7 +303,15 @@ export default function Register() {
                     <label className="text-white/50 text-xs mb-1.5 block">PASSWORD</label>
                     <div className="relative">
                       <Lock size={14} className="absolute left-3 top-3.5 text-white/30" />
-                      <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-white/5 border border-white/10 focus:border-blood-500/50 rounded-xl pl-9 pr-3 py-3 text-white text-sm outline-none placeholder:text-white/20 transition-colors" />
+                      <input
+                        type="password"
+                        name="rs_new_password"
+                        autoComplete="new-password"
+                        placeholder="••••••••"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 focus:border-blood-500/50 rounded-xl pl-9 pr-3 py-3 text-white text-sm outline-none placeholder:text-white/20 transition-colors"
+                      />
                     </div>
                   </div>
                 </motion.div>

@@ -32,6 +32,7 @@ export async function createBloodRequest({
   createdByRole,
   createdByName,
   createdByLocation,
+  createdByGeo,
   bloodGroup,
   units,
   urgency,
@@ -45,6 +46,7 @@ export async function createBloodRequest({
     createdByRole,
     createdByName: createdByName || null,
     createdByLocation: createdByLocation || null,
+    createdByGeo: createdByGeo || null, // {lat, lng}
     bloodGroup,
     units: Number(units || 1),
     urgency: urgency || 'critical',
@@ -93,8 +95,46 @@ export async function acceptRequest({ requestId, donorUid }) {
   await updateDoc(doc(db, 'requests', requestId), {
     status: 'accepted',
     acceptedBy: donorUid,
+    acceptedByRole: 'donor',
     acceptedAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   })
+}
+
+export async function acceptPatientRequestByHospital({
+  requestId,
+  hospitalUid,
+  hospitalName,
+  hospitalLocation,
+  hospitalGeo,
+  hospitalPhone,
+  acceptedUnits,
+}) {
+  if (!requestId) throw new Error('Missing requestId')
+  if (!hospitalUid) throw new Error('Missing hospitalUid')
+  await updateDoc(doc(db, 'requests', requestId), {
+    status: 'accepted',
+    acceptedBy: hospitalUid,
+    acceptedByRole: 'hospital',
+    acceptedByName: hospitalName || null,
+    acceptedByLocation: hospitalLocation || null,
+    acceptedByGeo: hospitalGeo || null,
+    acceptedByPhone: hospitalPhone || null,
+    acceptedUnits: Number(acceptedUnits || 0) || null,
+    acceptedAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  })
+}
+
+export async function listOpenPatientRequests() {
+  const q = query(
+    collection(db, 'requests'),
+    where('status', '==', 'open'),
+    where('createdByRole', '==', 'patient'),
+    orderBy('createdAt', 'desc'),
+    limit(25),
+  )
+  const snap = await getDocs(q)
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }))
 }
 

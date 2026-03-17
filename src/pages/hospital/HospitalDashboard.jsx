@@ -7,6 +7,8 @@ import EmergencyModal from '../../components/EmergencyModal'
 import { PageEnter, GlassCard, StatCard, SectionTitle, BloodBadge, UrgencyTag } from '../../components/UI'
 import { useAuth } from '../../contexts/AuthContext'
 import { listDonors } from '../../lib/firestoreUsers'
+import { acceptPatientRequestByHospital, listOpenPatientRequests } from '../../lib/firestoreRequests'
+import { formatKm, haversineKm } from '../../lib/geo'
 
 const activeRequests = [
   { id: 1, blood: 'O-', patient: 'Emergency Surgery', units: 3, urgency: 'critical', donors: 2, stage: 3 },
@@ -40,8 +42,12 @@ function RequestLifecycle({ stage }) {
 
 export default function HospitalDashboard() {
   const [modalOpen, setModalOpen] = useState(false)
-  const { profile } = useAuth()
+  const { user, profile } = useAuth()
   const [donors, setDonors] = useState([])
+  const [patientRequests, setPatientRequests] = useState([])
+  const [accepting, setAccepting] = useState(null) // request
+  const [acceptUnits, setAcceptUnits] = useState('1')
+  const [acceptLoading, setAcceptLoading] = useState(false)
 
   useEffect(() => {
     let active = true
@@ -56,9 +62,39 @@ export default function HospitalDashboard() {
     return () => { active = false }
   }, [])
 
+  useEffect(() => {
+    let active = true
+    ;(async () => {
+      try {
+        const res = await listOpenPatientRequests()
+        if (active) setPatientRequests(res)
+      } catch {
+        // ignore (may require index)
+      }
+    })()
+    return () => { active = false }
+  }, [])
+
+  const hospitalGeo = profile?.geo && typeof profile.geo.lat === 'number' && typeof profile.geo.lng === 'number'
+    ? { lat: profile.geo.lat, lng: profile.geo.lng }
+    : null
+
+  const hospitalAvailable = Array.isArray(profile?.availableBloodGroups) ? profile.availableBloodGroups : null
+
+  const nearbyPatientRequests = patientRequests
+    .map(r => {
+      const pg = r.createdByGeo && typeof r.createdByGeo.lat === 'number' && typeof r.createdByGeo.lng === 'number'
+        ? { lat: r.createdByGeo.lat, lng: r.createdByGeo.lng }
+        : null
+      const km = hospitalGeo && pg ? haversineKm(hospitalGeo, pg) : null
+      return { ...r, _km: km }
+    })
+    .filter(r => !hospitalAvailable || (r.bloodGroup && hospitalAvailable.includes(r.bloodGroup)))
+    .sort((a, b) => (a._km ?? 1e9) - (b._km ?? 1e9))
+
   return (
     <PageEnter>
-      <div className="flex min-h-screen bg-[#0a0a0a]">
+      <div className="flex min-h-screen bg-[#0a0a0a] overflow-x-hidden">
         <Sidebar role="hospital" />
         <main className="flex-1 overflow-auto pt-14 md:pt-0">
           {/* Top Bar */}
@@ -146,6 +182,108 @@ export default function HospitalDashboard() {
                 </motion.div>
               ))}
             </div>
+
+            {/* Nearby Patient Requests */}
+            <SectionTitle sub={hospitalGeo ? 'Sorted by distance (live location)' : 'Add hospital geo to compute distance'}>Nearby Patient Requests</SectionTitle>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+              {nearbyPatientRequests.slice(0, 6).map((r, i) => (
+                <motion.div
+                  key={r.id}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.06 }}
+                  className="glass rounded-2xl p-5 border border-white/5 hover:border-white/10 transition-all"
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <BloodBadge type={r.bloodGroup || '—'} glow />
+                    <UrgencyTag level={r.urgency || 'medium'} />
+                  </div>
+                  <p className="text-white font-medium text-sm">{r.createdByName || 'Patient'}</p>
+                  <p className="text-white/40 text-xs mt-1">{r.createdByLocation || '—'}</p>
+                  <div className="flex items-center justify-between mt-4">
+                    <span className="text-white/50 text-xs">
+                      {hospitalGeo ? `📍 ${formatKm(r._km)} away` : '📍 Distance unavailable'}
+                    </span>
+                    <span className="text-white/40 text-xs">{r.units ? `${r.units} unit(s)` : ''}</span>
+                  </div>
+
+                  <div className="mt-4 flex gap-2">
+                    <motion.button
+                      whileTap={{ scale: 0.97 }}
+                      onClick={() => { setAccepting(r); setAcceptUnits(String(r.units || 1)) }}
+                      className="flex-1 text-xs px-3 py-2 rounded-xl bg-green-500/20 text-green-300 border border-green-500/30 hover:bg-green-500/30 transition-all"
+                    >
+                      Accept (Hospital)
+                    </motion.button>
+                  </div>
+                </motion.div>
+              ))}
+              {nearbyPatientRequests.length === 0 && (
+                <GlassCard className="p-6 border border-white/10 md:col-span-2 lg:col-span-3">
+                  <p className="text-white/40 text-sm">No open patient requests nearby yet.</p>
+                </GlassCard>
+              )}
+            </div>
+
+            {/* Accept popup */}
+            {accepting && (
+              <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
+                <div className="absolute inset-0 bg-black/70" onClick={() => !acceptLoading && setAccepting(null)} />
+                <div className="relative w-full max-w-md glass rounded-2xl border border-white/10 p-5">
+                  <h3 className="font-syne font-black text-white text-lg mb-1">Accept Request</h3>
+                  <p className="text-white/50 text-sm mb-4">
+                    {accepting.createdByName || 'Patient'} · {accepting.bloodGroup} · Requested {accepting.units || 1} unit(s)
+                  </p>
+
+                  <label className="text-white/50 text-xs block mb-1">UNITS YOU CAN PROVIDE</label>
+                  <input
+                    value={acceptUnits}
+                    onChange={(e) => setAcceptUnits(e.target.value)}
+                    className="w-full bg-white/5 border border-white/10 focus:border-green-500/40 rounded-xl px-3 py-2.5 text-white text-sm outline-none"
+                    inputMode="numeric"
+                  />
+                  <p className="text-white/30 text-xs mt-1">You can accept partially if you have fewer units.</p>
+
+                  <div className="mt-4 flex gap-2">
+                    <motion.button
+                      whileTap={{ scale: 0.97 }}
+                      disabled={acceptLoading}
+                      onClick={() => setAccepting(null)}
+                      className="flex-1 text-sm px-4 py-2.5 rounded-xl glass border border-white/10 text-white/60 hover:text-white transition-colors disabled:opacity-50"
+                    >
+                      Cancel
+                    </motion.button>
+                    <motion.button
+                      whileTap={{ scale: 0.97 }}
+                      disabled={acceptLoading || !user}
+                      onClick={async () => {
+                        if (!user) return
+                        setAcceptLoading(true)
+                        try {
+                          await acceptPatientRequestByHospital({
+                            requestId: accepting.id,
+                            hospitalUid: user.uid,
+                            hospitalName: profile?.name || null,
+                            hospitalLocation: profile?.location || null,
+                            hospitalGeo: hospitalGeo || null,
+                            hospitalPhone: profile?.phone || null,
+                            acceptedUnits: acceptUnits,
+                          })
+                          // remove from local list
+                          setPatientRequests(prev => prev.filter(x => x.id !== accepting.id))
+                          setAccepting(null)
+                        } finally {
+                          setAcceptLoading(false)
+                        }
+                      }}
+                      className="flex-1 text-sm px-4 py-2.5 rounded-xl bg-green-500 text-white font-medium hover:bg-green-600 transition-colors disabled:opacity-50"
+                    >
+                      {acceptLoading ? 'Accepting…' : 'Confirm Accept'}
+                    </motion.button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Donor Approval */}
             <SectionTitle sub="Confirm or reject incoming donors">Donor Approvals</SectionTitle>
