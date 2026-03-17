@@ -13,7 +13,7 @@ export default function About() {
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-16">
             <div className="inline-flex items-center gap-2 glass-red rounded-full px-4 py-2 mb-6">
               <Droplets size={14} className="text-blood-400" />
-              <span className="text-blood-400 text-sm">Our Mission</span>
+              <span className="text-blood-400 text-sm">Our Lund</span>
             </div>
             <h1 className="font-syne text-3xl md:text-5xl font-black text-white mb-4">
               Built to <span className="text-blood-500">Save Lives</span>
