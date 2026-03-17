@@ -18,6 +18,7 @@ export default function Navbar() {
   const links = [
     { to: '/', label: 'Home' },
     { to: '/find-blood', label: 'Find Blood' },
+    { to: '/community', label: 'Community' },
     { to: '/about', label: 'About' },
   ]
 

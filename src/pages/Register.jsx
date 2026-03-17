@@ -16,6 +16,7 @@ export default function Register() {
   const [role, setRole] = useState('donor')
   const [step, setStep] = useState(1)
   const [bloodGroup, setBloodGroup] = useState('')
+  const [donorMedical, setDonorMedical] = useState({ diabetes: null, alcohol: null, smoking: null })
   const [availableBloodGroups, setAvailableBloodGroups] = useState([])
   const [geo, setGeo] = useState(null) // {lat, lng}
   const [loading, setLoading] = useState(false)
@@ -49,6 +50,16 @@ export default function Register() {
 
   const handleNext = async () => {
     if (step < 2) { setStep(2); return }
+    if (role === ROLES.donor) {
+      const missingMedical =
+        donorMedical.diabetes === null ||
+        donorMedical.alcohol === null ||
+        donorMedical.smoking === null
+      if (!bloodGroup || missingMedical) {
+        setError(!bloodGroup ? 'Please select your blood group.' : 'Please answer all health & safety questions.')
+        return
+      }
+    }
     setLoading(true)
     setError('')
     try {
@@ -67,6 +78,11 @@ export default function Register() {
         phone: phone || null,
         location: location || null,
         bloodGroup: safeRole === ROLES.donor ? (bloodGroup || null) : null,
+        medical: safeRole === ROLES.donor ? {
+          diabetes: donorMedical.diabetes,
+          alcohol: donorMedical.alcohol,
+          smoking: donorMedical.smoking,
+        } : null,
         availableBloodGroups: safeRole === ROLES.hospital ? (availableBloodGroups.length ? availableBloodGroups : null) : null,
         geo: safeRole === ROLES.hospital ? (geo || null) : null,
         createdAt: serverTimestamp(),
@@ -244,6 +260,50 @@ export default function Register() {
                           </motion.button>
                         ))}
                       </div>
+                    </div>
+                  )}
+
+                  {role === ROLES.donor && (
+                    <div className="glass rounded-2xl p-4 border border-white/10">
+                      <p className="text-white font-medium text-sm mb-3">Health & Safety (required)</p>
+
+                      {[
+                        { key: 'diabetes', label: 'Do you have diabetes?' },
+                        { key: 'alcohol', label: 'Do you consume alcohol regularly?' },
+                        { key: 'smoking', label: 'Do you smoke or use tobacco?' },
+                      ].map(q => (
+                        <div key={q.key} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-2 border-b border-white/5 last:border-0">
+                          <span className="text-white/60 text-sm">{q.label}</span>
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              onClick={() => setDonorMedical(m => ({ ...m, [q.key]: false }))}
+                              className={`px-3 py-1.5 rounded-xl text-xs border transition-colors ${
+                                donorMedical[q.key] === false
+                                  ? 'bg-green-500/20 border-green-500/30 text-green-300'
+                                  : 'glass border-white/10 text-white/50 hover:text-white'
+                              }`}
+                            >
+                              No
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setDonorMedical(m => ({ ...m, [q.key]: true }))}
+                              className={`px-3 py-1.5 rounded-xl text-xs border transition-colors ${
+                                donorMedical[q.key] === true
+                                  ? 'bg-blood-500/20 border-blood-500/30 text-blood-300'
+                                  : 'glass border-white/10 text-white/50 hover:text-white'
+                              }`}
+                            >
+                              Yes
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+
+                      {(donorMedical.diabetes === null || donorMedical.alcohol === null || donorMedical.smoking === null) && (
+                        <p className="text-white/30 text-xs mt-3">Please answer all questions to continue.</p>
+                      )}
                     </div>
                   )}
 

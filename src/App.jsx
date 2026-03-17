@@ -4,6 +4,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import FindBlood from './pages/FindBlood'
 import About from './pages/About'
+import Community from './pages/Community'
 import DonorDashboard from './pages/donor/DonorDashboard'
 import DonorProfile from './pages/donor/Profile'
 import DonorRequests from './pages/donor/Requests'
@@ -28,6 +29,7 @@ export default function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<RoleRedirect fallback="/login" />} />
         <Route path="/find-blood" element={<FindBlood />} />
+        <Route path="/community" element={<RequireAuth><Community /></RequireAuth>} />
         <Route path="/about" element={<About />} />
         {/* Donor */}
         <Route path="/donor/dashboard" element={

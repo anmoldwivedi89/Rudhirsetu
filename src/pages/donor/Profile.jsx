@@ -11,6 +11,7 @@ export default function DonorProfile() {
   const { user, profile } = useAuth()
   const [saving, setSaving] = useState(false)
   const [form, setForm] = useState({ name: '', bloodGroup: '', phone: '', location: '', dob: '', weight: '' })
+  const [medical, setMedical] = useState({ diabetes: null, alcohol: null, smoking: null })
 
   useEffect(() => {
     if (!profile) return
@@ -21,6 +22,11 @@ export default function DonorProfile() {
       location: profile.location || '',
       dob: profile.dob || '',
       weight: profile.weight || '',
+    })
+    setMedical({
+      diabetes: typeof profile.medical?.diabetes === 'boolean' ? profile.medical.diabetes : null,
+      alcohol: typeof profile.medical?.alcohol === 'boolean' ? profile.medical.alcohol : null,
+      smoking: typeof profile.medical?.smoking === 'boolean' ? profile.medical.smoking : null,
     })
   }, [profile])
 
@@ -42,6 +48,11 @@ export default function DonorProfile() {
         location: form.location || null,
         dob: form.dob || null,
         weight: form.weight || null,
+        medical: {
+          diabetes: medical.diabetes,
+          alcohol: medical.alcohol,
+          smoking: medical.smoking,
+        },
       })
       setEditing(false)
     } finally {
@@ -107,6 +118,51 @@ export default function DonorProfile() {
                     )}
                   </div>
                 ))}
+              </div>
+
+              <div className="mt-6">
+                <h3 className="font-syne font-bold text-white mb-3">Health & Safety</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {[
+                    { key: 'diabetes', label: 'Diabetes' },
+                    { key: 'alcohol', label: 'Alcohol' },
+                    { key: 'smoking', label: 'Smoking/Tobacco' },
+                  ].map(q => (
+                    <div key={q.key} className="glass rounded-2xl p-4 border border-white/10">
+                      <p className="text-white/60 text-xs mb-2">{q.label}</p>
+                      {editing ? (
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setMedical(m => ({ ...m, [q.key]: false }))}
+                            className={`flex-1 px-3 py-2 rounded-xl text-xs border transition-colors ${
+                              medical[q.key] === false
+                                ? 'bg-green-500/20 border-green-500/30 text-green-300'
+                                : 'glass border-white/10 text-white/50 hover:text-white'
+                            }`}
+                          >
+                            No
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setMedical(m => ({ ...m, [q.key]: true }))}
+                            className={`flex-1 px-3 py-2 rounded-xl text-xs border transition-colors ${
+                              medical[q.key] === true
+                                ? 'bg-blood-500/20 border-blood-500/30 text-blood-300'
+                                : 'glass border-white/10 text-white/50 hover:text-white'
+                            }`}
+                          >
+                            Yes
+                          </button>
+                        </div>
+                      ) : (
+                        <p className="text-white text-sm font-medium">
+                          {medical[q.key] === null ? '—' : (medical[q.key] ? 'Yes' : 'No')}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
 
               {editing && (

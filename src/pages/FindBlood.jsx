@@ -6,6 +6,7 @@ import { PageEnter, BloodBadge, UrgencyTag, GlassCard } from '../components/UI'
 import EmergencyModal from '../components/EmergencyModal'
 import { listHospitals } from '../lib/firestoreUsers'
 import { formatKm, haversineKm } from '../lib/geo'
+import { listCommunityPosts } from '../lib/firestoreCommunity'
 
 const bloodGroups = ['All', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
 
@@ -109,6 +110,7 @@ function MapSimulation({ results }) {
 }
 
 export default function FindBlood() {
+  const [tab, setTab] = useState('hospitals') // hospitals | donors
   const [search, setSearch] = useState('')
   const [selectedGroup, setSelectedGroup] = useState('All')
   const [modalOpen, setModalOpen] = useState(false)
@@ -118,6 +120,9 @@ export default function FindBlood() {
   const [watching, setWatching] = useState(false)
   const [hospitals, setHospitals] = useState([])
   const [loadingHospitals, setLoadingHospitals] = useState(true)
+  const [donorPosts, setDonorPosts] = useState([])
+  const [loadingDonors, setLoadingDonors] = useState(true)
+  const [detail, setDetail] = useState(null) // selected row for modal
 
   useEffect(() => {
     if (!navigator.geolocation) {
@@ -158,6 +163,21 @@ export default function FindBlood() {
     return () => { active = false }
   }, [selectedGroup])
 
+  useEffect(() => {
+    let active = true
+    setLoadingDonors(true)
+    ;(async () => {
+      try {
+        const res = await listCommunityPosts({ type: 'donor_offer', bloodGroup: selectedGroup })
+        if (!active) return
+        setDonorPosts(res)
+      } finally {
+        if (active) setLoadingDonors(false)
+      }
+    })()
+    return () => { active = false }
+  }, [selectedGroup])
+
   const hospitalRows = useMemo(() => {
     const blood = selectedGroup === 'All' ? null : selectedGroup
     const filtered = hospitals
@@ -182,7 +202,30 @@ export default function FindBlood() {
     return filtered
   }, [hospitals, selectedGroup, search, pos])
 
-  const nearest = hospitalRows[0] || null
+  const donorRows = useMemo(() => {
+    return donorPosts
+      .filter(d => search === '' || (d.name || '').toLowerCase().includes(search.toLowerCase()))
+      .map(d => {
+        const geo = d.geo && typeof d.geo.lat === 'number' && typeof d.geo.lng === 'number'
+          ? { lat: d.geo.lat, lng: d.geo.lng }
+          : null
+        const km = pos && geo ? haversineKm(pos, geo) : null
+        return {
+          id: d.id,
+          type: 'Donor',
+          name: d.name || 'Donor',
+          blood: d.bloodGroup || '—',
+          contact: d.phone || '—',
+          location: d.locationText || '—',
+          km,
+          message: d.message || null,
+        }
+      })
+      .sort((a, b) => (a.km ?? 1e9) - (b.km ?? 1e9))
+  }, [donorPosts, search, pos])
+
+  const nearestHospital = hospitalRows[0] || null
+  const nearestDonor = donorRows[0] || null
 
   return (
     <PageEnter>
@@ -210,7 +253,7 @@ export default function FindBlood() {
               <Search size={18} className="absolute left-4 top-3.5 text-white/30" />
               <input
                 type="text"
-                placeholder="Search hospital or donor name..."
+                placeholder={tab === 'donors' ? 'Search donor name...' : 'Search hospital name...'}
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 className="w-full glass border border-white/10 focus:border-blood-500/50 rounded-xl pl-11 pr-4 py-3 text-white text-sm outline-none placeholder:text-white/20 transition-colors"
@@ -224,6 +267,26 @@ export default function FindBlood() {
               🚨 Emergency Request
             </motion.button>
           </motion.div>
+
+          {/* Tabs */}
+          <div className="flex gap-2 mb-4">
+            <button
+              onClick={() => setTab('hospitals')}
+              className={`px-4 py-2 rounded-xl border text-sm ${
+                tab === 'hospitals' ? 'bg-blood-500/20 border-blood-500 text-blood-300' : 'glass border-white/10 text-white/60'
+              }`}
+            >
+              Hospitals
+            </button>
+            <button
+              onClick={() => setTab('donors')}
+              className={`px-4 py-2 rounded-xl border text-sm ${
+                tab === 'donors' ? 'bg-green-500/20 border-green-500 text-green-300' : 'glass border-white/10 text-white/60'
+              }`}
+            >
+              Donors
+            </button>
+          </div>
 
           {/* Blood group filter */}
           <motion.div
@@ -252,7 +315,9 @@ export default function FindBlood() {
             {/* Results */}
             <div className="lg:col-span-3 flex flex-col gap-3">
               <div className="flex items-center justify-between mb-1">
-                <p className="text-white/40 text-sm">{hospitalRows.length} hospitals found</p>
+                <p className="text-white/40 text-sm">
+                  {tab === 'donors' ? `${donorRows.length} donors found` : `${hospitalRows.length} hospitals found`}
+                </p>
                 <div className="flex items-center gap-2 text-white/30 text-xs">
                   <MapPin size={12} />
                   <span>
@@ -267,19 +332,26 @@ export default function FindBlood() {
                 </div>
               </div>
 
-              {loadingHospitals && (
+              {tab === 'hospitals' && loadingHospitals && (
                 <div className="glass rounded-2xl p-6 border border-white/10 text-white/50">
                   Loading hospitals…
                 </div>
               )}
 
-              {!loadingHospitals && hospitalRows.map((r, i) => (
+              {tab === 'donors' && loadingDonors && (
+                <div className="glass rounded-2xl p-6 border border-white/10 text-white/50">
+                  Loading donors…
+                </div>
+              )}
+
+              {tab === 'hospitals' && !loadingHospitals && hospitalRows.map((r, i) => (
                 <motion.div
                   key={r.id}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.06 }}
                   className="glass rounded-2xl p-3 sm:p-5 border border-white/5 hover:border-white/10 transition-all"
+                  onClick={() => setDetail({ ...r, type: 'Hospital' })}
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
@@ -319,6 +391,41 @@ export default function FindBlood() {
                   </div>
                 </motion.div>
               ))}
+
+              {tab === 'donors' && !loadingDonors && donorRows.map((r, i) => (
+                <motion.div
+                  key={r.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.06 }}
+                  className="glass rounded-2xl p-3 sm:p-5 border border-white/5 hover:border-white/10 transition-all cursor-pointer"
+                  onClick={() => setDetail(r)}
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <BloodBadge type={r.blood} glow />
+                      <div>
+                        <p className="text-white font-medium">{r.name}</p>
+                        <p className="text-white/30 text-xs mt-0.5">{r.location}</p>
+                      </div>
+                    </div>
+                    <span className="text-xs px-2 py-1 rounded-lg border border-green-500/30 bg-green-500/15 text-green-300">
+                      Donor
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-white/40 text-sm">
+                      <MapPin size={14} className="text-blood-400" />
+                      <span>{formatKm(r.km)} away</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg glass text-white/70">
+                      <Phone size={12} />
+                      {r.contact === '—' ? 'No phone' : 'Call'}
+                    </div>
+                  </div>
+                  {r.message && <p className="text-white/60 text-sm mt-3">{r.message}</p>}
+                </motion.div>
+              ))}
             </div>
 
             {/* Map */}
@@ -333,21 +440,27 @@ export default function FindBlood() {
                   <p className="text-green-400 text-xs mt-1">Live tracking ON</p>
                 )}
                 <div className="h-px bg-white/10 my-3" />
-                <p className="text-white/40 text-xs mb-1">NEAREST HOSPITAL {selectedGroup !== 'All' ? `(${selectedGroup})` : ''}</p>
-                {nearest ? (
+                <p className="text-white/40 text-xs mb-1">
+                  {tab === 'donors' ? 'NEAREST DONOR' : 'NEAREST HOSPITAL'} {selectedGroup !== 'All' ? `(${selectedGroup})` : ''}
+                </p>
+                {(tab === 'donors' ? nearestDonor : nearestHospital) ? (
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="text-white font-medium text-sm">{nearest.name}</p>
-                      <p className="text-white/40 text-xs">{nearest.location}</p>
-                      <p className="text-white/40 text-xs mt-0.5">📞 {nearest.contact}</p>
+                      <p className="text-white font-medium text-sm">{(tab === 'donors' ? nearestDonor : nearestHospital).name}</p>
+                      <p className="text-white/40 text-xs">{(tab === 'donors' ? nearestDonor : nearestHospital).location}</p>
+                      <p className="text-white/40 text-xs mt-0.5">📞 {(tab === 'donors' ? nearestDonor : nearestHospital).contact}</p>
                     </div>
                     <div className="text-right">
-                      <BloodBadge type={nearest.blood} size="sm" glow />
-                      <p className="text-white/60 text-xs mt-1">{formatKm(nearest.km)}</p>
+                      <BloodBadge type={(tab === 'donors' ? nearestDonor : nearestHospital).blood} size="sm" glow />
+                      <p className="text-white/60 text-xs mt-1">{formatKm((tab === 'donors' ? nearestDonor : nearestHospital).km)}</p>
                     </div>
                   </div>
                 ) : (
-                  <p className="text-white/40 text-sm">No hospital data yet. Add hospital users with `geo` (lat/lng).</p>
+                  <p className="text-white/40 text-sm">
+                    {tab === 'donors'
+                      ? 'No donor posts yet. Ask donors to post in Community.'
+                      : 'No hospital data yet. Add hospital users with `geo` (lat/lng).'}
+                  </p>
                 )}
               </div>
 
@@ -363,6 +476,50 @@ export default function FindBlood() {
           </div>
         </div>
       </div>
+
+      {/* Detail modal */}
+      {detail && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center px-4">
+          <div className="absolute inset-0 bg-black/70" onClick={() => setDetail(null)} />
+          <div className="relative w-full max-w-md glass rounded-2xl border border-white/10 p-5">
+            <div className="flex items-start justify-between gap-3 mb-3">
+              <div>
+                <p className="text-white font-medium">{detail.name}</p>
+                <p className="text-white/40 text-sm">{detail.location}</p>
+              </div>
+              <div className="text-right">
+                <BloodBadge type={detail.blood} glow />
+                <p className="text-white/50 text-xs mt-1">{detail.type}</p>
+              </div>
+            </div>
+            <div className="flex items-center justify-between text-xs text-white/50 mb-4">
+              <span className="flex items-center gap-1"><MapPin size={12} className="text-blood-400" /> {formatKm(detail.km)} away</span>
+              <span>📞 {detail.contact}</span>
+            </div>
+            {detail.message && <p className="text-white/70 text-sm mb-4">{detail.message}</p>}
+            <div className="flex gap-2">
+              <a
+                href={detail.contact && detail.contact !== '—' ? `tel:${detail.contact}` : undefined}
+                className={`flex-1 text-center px-4 py-2.5 rounded-xl text-sm font-medium ${
+                  detail.contact && detail.contact !== '—'
+                    ? 'bg-blood-500 text-white hover:bg-blood-600'
+                    : 'bg-white/10 text-white/40 cursor-not-allowed'
+                }`}
+              >
+                <span className="inline-flex items-center justify-center gap-2">
+                  <Phone size={16} /> Call
+                </span>
+              </a>
+              <button
+                className="flex-1 px-4 py-2.5 rounded-xl text-sm glass border border-white/10 text-white/70 hover:text-white"
+                onClick={() => setDetail(null)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <EmergencyModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
     </PageEnter>
   )
