@@ -44,12 +44,12 @@ function AnimatedCounter({ end, suffix = '' }) {
 }
 
 const features = [
-  { icon: Zap, title: 'Real-Time Matching', desc: 'Smart donor discovery in under 60 seconds for urgent needs.', color: 'yellow' },
-  { icon: MapPin, title: 'Location-Based', desc: 'Find compatible donors near you with precise radius filtering.', color: 'blue' },
-  { icon: BadgeCheck, title: 'Verified Donors', desc: 'Donor profiles are screened and verified for safer matches.', color: 'green' },
-  { icon: Activity, title: 'Live Tracking', desc: 'Track every request from broadcast to fulfillment in real time.', color: 'purple' },
-  { icon: Clock, title: '24/7 Emergency', desc: 'Round-the-clock emergency broadcast system when seconds matter.', color: 'red' },
-  { icon: Heart, title: 'Community Driven', desc: 'Built for donors, hospitals, and patients to save lives together.', color: 'pink' },
+  { icon: Zap, title: 'Real-Time Matching', desc: 'Get matched with compatible donors in under 60 seconds.', color: 'yellow' },
+  { icon: MapPin, title: 'Location-Based Intelligence', desc: 'Precision-based donor discovery within your radius.', color: 'blue' },
+  { icon: BadgeCheck, title: 'Verified Donor Network', desc: 'Every profile is screened for safety and reliability.', color: 'green' },
+  { icon: Activity, title: 'Live Tracking', desc: 'Track requests from creation to completion.', color: 'purple' },
+  { icon: Clock, title: '24/7 Emergency System', desc: 'Always active when urgency is critical.', color: 'red' },
+  { icon: Heart, title: 'Community-Driven Impact', desc: 'Built for donors, hospitals, and patients together.', color: 'pink' },
 ]
 
 const stats = [
@@ -60,15 +60,15 @@ const stats = [
 ]
 
 const testimonials = [
-  { name: 'Dr. Priya Sharma', role: 'Emergency Physician, AIIMS', text: 'RudhirSetu helped us find a rare AB- donor in 12 minutes during a critical surgery.', avatar: 'PS' },
-  { name: 'Rahul Mehta', role: 'Regular Donor', text: 'The gamification makes donating feel rewarding. I\'ve saved 8 lives now.', avatar: 'RM' },
-  { name: 'City Hospital Mumbai', role: 'Partner Hospital', text: 'Our blood shortage cases dropped by 73% after integrating with RudhirSetu.', avatar: 'CH' },
+  { name: 'Dr. Priya Sharma', role: 'Emergency Physician, AIIMS', text: 'RudhirSetu helped us find a rare AB- donor in 12 minutes during a critical surgery. It was a life-or-death moment.', avatar: 'PS' },
+  { name: 'Rahul Mehta', role: 'Regular Donor', text: 'Every donation feels impactful. I\'ve helped save 8 lives through this platform, and the experience is seamless.', avatar: 'RM' },
+  { name: 'City Hospital Mumbai', role: 'Partner Hospital', text: 'Our blood shortage cases dropped by 73% after integrating with RudhirSetu. The system transformed our emergency response.', avatar: 'CH' },
 ]
 
 const howItWorks = [
-  { step: '01', title: 'Register', desc: 'Create your profile as a donor or hospital in minutes.', Icon: Users },
-  { step: '02', title: 'Find / Request Blood', desc: 'Broadcast urgent needs or discover verified donors nearby.', Icon: Droplets },
-  { step: '03', title: 'Save Lives', desc: 'Coordinate quickly and track fulfillment with confidence.', Icon: HeartPulse },
+  { step: '01', title: 'Register', desc: 'Create your donor or hospital profile in under a minute.', Icon: Users },
+  { step: '02', title: 'Find or Request Blood', desc: 'Instantly connect with verified donors or broadcast urgent needs.', Icon: Droplets },
+  { step: '03', title: 'Save Lives', desc: 'Coordinate quickly and track requests until fulfillment.', Icon: HeartPulse },
 ]
 
 const liveRequests = [
@@ -155,7 +155,7 @@ export default function Home() {
                 >
                   <span className="w-2 h-2 rounded-full bg-blood-500 animate-pulse" />
                   <span className="text-gray-200 text-sm font-semibold">
-                    Live Network <span className="text-blood-400">— 48K+</span> Active Donors
+                    Live Network <span className="text-blood-400">— 48,000+</span> Active Donors
                   </span>
                 </motion.div>
 
@@ -195,7 +195,7 @@ export default function Home() {
                   transition={{ delay: 0.55, duration: 0.5 }}
                   className="text-gray-300 text-base sm:text-lg leading-relaxed mb-6 sm:mb-8 max-w-xl font-medium"
                 >
-                  The fastest, verified network to connect emergency blood requests with nearby donors. Every second counts.
+                  A fast, verified network designed to connect emergency blood requests with nearby donors within minutes. RudhirSetu ensures every request reaches the right people at the right time—minimizing delays when urgency is critical. When every second matters, the platform responds instantly to help save lives.
                 </motion.p>
 
                 <div className="flex flex-col sm:flex-row gap-3">
@@ -244,7 +244,7 @@ export default function Home() {
                     <div className="flex items-center gap-1 mb-0.5">
                       {[1,2,3,4,5].map(i => <Star key={i} size={12} className="text-yellow-400 fill-yellow-400" />)}
                     </div>
-                    <p className="text-gray-300 text-xs font-medium">Trusted by 12,000+ lives saved</p>
+                    <p className="text-gray-300 text-xs font-medium">Trusted in 12,000+ life-saving cases</p>
                   </div>
                 </div>
               </motion.div>
@@ -336,10 +336,10 @@ export default function Home() {
                 <div className="px-4 pb-5">
                   <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                     {[
-                      { label: 'Request Blood', Icon: Droplets, onClick: () => setModalOpen(true), tone: 'from-blood-500/25 to-white/5', border: 'border-blood-500/25' },
-                      { label: 'Become Donor', Icon: Users, to: '/register', tone: 'from-white/10 to-white/5', border: 'border-white/10' },
-                      { label: 'Find Nearby', Icon: MapPin, to: '/find-blood', tone: 'from-purple-500/15 to-white/5', border: 'border-white/10' },
-                      { label: 'Emergency', Icon: HeartPulse, onClick: () => setModalOpen(true), tone: 'from-red-500/20 to-white/5', border: 'border-blood-500/20' },
+                      { label: 'Request Blood', Icon: Droplets, sub: 'Raise an urgent request instantly', onClick: () => setModalOpen(true), tone: 'from-blood-500/25 to-white/5', border: 'border-blood-500/25' },
+                      { label: 'Become Donor', Icon: Users, sub: 'Join and start saving lives', to: '/register', tone: 'from-white/10 to-white/5', border: 'border-white/10' },
+                      { label: 'Find Nearby', Icon: MapPin, sub: 'Discover donors near your location', to: '/find-blood', tone: 'from-purple-500/15 to-white/5', border: 'border-white/10' },
+                      { label: 'Emergency', Icon: HeartPulse, sub: 'Trigger rapid emergency broadcast', onClick: () => setModalOpen(true), tone: 'from-red-500/20 to-white/5', border: 'border-blood-500/20' },
                     ].map((a) => {
                       const Card = (
                         <motion.button
@@ -361,7 +361,7 @@ export default function Home() {
                           </div>
                           <div className="mt-3">
                             <p className="text-white font-semibold leading-tight">{a.label}</p>
-                            <p className="text-gray-300 text-xs font-medium mt-1">Tap to open</p>
+                            <p className="text-gray-300 text-xs font-medium mt-1">{a.sub}</p>
                           </div>
                         </motion.button>
                       )
@@ -392,7 +392,7 @@ export default function Home() {
                     Live Blood <span className="text-blood-500">Requests</span>
                   </h2>
                   <p className="text-gray-300 text-sm sm:text-base font-medium mt-1">
-                    Sample feed (real results appear after login).
+                    Preview active requests. Login to interact and respond.
                   </p>
                 </div>
                 <motion.button
@@ -503,7 +503,7 @@ export default function Home() {
                   How it <span className="text-blood-500">works</span>
                 </h2>
                 <p className="text-gray-300 text-sm sm:text-base font-medium mt-2 max-w-2xl">
-                  A simple, app-first flow optimized for urgent needs—register, connect, and save lives.
+                  A streamlined flow designed for speed and clarity during emergencies.
                 </p>
               </motion.div>
 
@@ -584,7 +584,7 @@ export default function Home() {
                   Why <span className="text-blood-500">RudhirSetu</span>
                 </h2>
                 <p className="text-gray-300 text-sm sm:text-base font-medium mt-2 max-w-2xl">
-                  Premium, glassy UI with mission-critical clarity—built for speed, trust, and reliability.
+                  Precision-engineered for life-saving speed, trust, and reliability.
                 </p>
               </motion.div>
 
@@ -632,7 +632,7 @@ export default function Home() {
                 viewport={{ once: true }}
                 className="font-syne text-2xl sm:text-3xl md:text-4xl font-black text-white mb-6"
               >
-                Testimonials <span className="text-blood-500">that matter</span>
+                Real Stories. <span className="text-blood-500">Real Impact.</span>
               </motion.h2>
 
               {/* Mobile: snap scroll carousel */}
@@ -700,10 +700,10 @@ export default function Home() {
             <div className="max-w-md mx-auto lg:max-w-none">
               <div className="text-left mb-8">
                 <h2 className="font-syne text-2xl sm:text-3xl md:text-4xl font-black text-white">
-                  FAQ <span className="text-blood-500">for quick clarity</span>
+                  Frequently Asked <span className="text-blood-500">Questions</span>
                 </h2>
                 <p className="text-gray-300 mt-2 font-medium">
-                  Tap to expand—touch friendly, smooth, and readable.
+                  Quick answers to common questions about RudhirSetu.
                 </p>
               </div>
 
@@ -758,7 +758,7 @@ export default function Home() {
                     Built on <span className="text-blood-500">trust</span>
                   </h2>
                   <p className="text-gray-300 mt-2 font-medium max-w-xl">
-                    Verified profiles, secure flows, and real-time updates—designed for critical moments.
+                    Every interaction is secured, verified, and tracked in real-time to ensure reliability during critical moments.
                   </p>
                   <div className="mt-5 flex flex-wrap gap-3">
                     {[
@@ -807,9 +807,9 @@ export default function Home() {
                 🩸
               </motion.div>
               <h2 className="relative font-syne text-3xl sm:text-4xl md:text-5xl font-black text-white mb-4">
-                One drop can save<br /><span className="text-blood-500">three lives.</span>
+                One Drop Can Save<br /><span className="text-blood-500">Three Lives</span>
               </h2>
-              <p className="relative text-gray-300 text-lg mb-8 font-medium">Join the network. Be the reason someone’s heart keeps beating.</p>
+              <p className="relative text-gray-300 text-lg mb-8 font-medium">Join RudhirSetu today and be the reason someone survives tomorrow.</p>
               <div className="relative flex flex-col sm:flex-row gap-3 justify-center">
                 <Link to="/register" className="w-full sm:w-auto">
                   <motion.button

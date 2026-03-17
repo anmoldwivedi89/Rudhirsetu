@@ -16,6 +16,8 @@ import AdminDashboard from './pages/admin/AdminDashboard'
 import UserManagement from './pages/admin/UserManagement'
 import DeveloperProfile from './pages/admin/DeveloperProfile'
 import PatientDashboard from './pages/patient/PatientDashboard'
+import PatientProfile from './pages/patient/Profile'
+import PatientHistory from './pages/patient/History'
 import Developers from './pages/Developers'
 import ProtectedRoute, { RequireAuth, RequireRole } from './components/ProtectedRoute'
 import { ROLES } from './lib/roles'
@@ -77,6 +79,12 @@ export default function App() {
             {/* Patient */}
             <Route path="/patient/dashboard" element={
               <RequireAuth><RequireRole allow={[ROLES.patient]}><PatientDashboard /></RequireRole></RequireAuth>
+            } />
+            <Route path="/patient/profile" element={
+              <RequireAuth><RequireRole allow={[ROLES.patient]}><PatientProfile /></RequireRole></RequireAuth>
+            } />
+            <Route path="/patient/history" element={
+              <RequireAuth><RequireRole allow={[ROLES.patient]}><PatientHistory /></RequireRole></RequireAuth>
             } />
 
             {/* Admin (optional) */}

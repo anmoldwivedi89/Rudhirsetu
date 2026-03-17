@@ -95,7 +95,7 @@ export default function HospitalDashboard() {
     <PageEnter>
       <div className="w-full">
         {/* Top Bar */}
-        <div className="sticky top-0 z-30 glass border-b border-white/5 px-4 md:px-6 py-4 flex flex-wrap items-center justify-between gap-3 -mx-4 md:-mx-6">
+        <div className="sticky top-0 z-30 glass border-b border-white/5 px-4 md:px-6 py-4 flex flex-wrap items-center justify-between gap-3">
           <div className="px-0 md:px-0">
             <h1 className="font-syne font-bold text-white text-xl">Hospital Command Center</h1>
             <p className="text-white/40 text-xs">

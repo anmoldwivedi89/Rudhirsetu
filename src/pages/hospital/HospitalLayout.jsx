@@ -12,14 +12,13 @@ export default function HospitalLayout() {
   }, [location.pathname])
 
   return (
-    <div className="min-h-dvh bg-[#0a0a0a] overflow-x-hidden md:flex">
+    <div className="flex min-h-screen bg-[#0a0a0a]">
       <Sidebar role="hospital" />
-      <main className="flex-1 pt-16 md:pt-0">
-        <div className="mx-auto w-full max-w-md md:max-w-6xl px-4 md:px-6 py-4 md:py-6">
+      <main className="flex-1 overflow-auto pt-14 md:pt-0">
+        <div className="mx-auto w-full max-w-md sm:max-w-lg lg:max-w-xl xl:max-w-6xl px-4 md:px-6 py-4 md:py-6">
           <Outlet />
         </div>
       </main>
     </div>
   )
 }
-

@@ -171,11 +171,12 @@ export default function Sidebar({ role = 'donor' }) {
       </AnimatePresence>
 
       {/* Desktop sidebar (unchanged logic) */}
-      <motion.aside
-        animate={{ width: collapsed ? 72 : 240 }}
-        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-        className="hidden md:flex flex-col h-screen sticky top-0 glass border-r border-white/10 z-40 overflow-hidden"
-      >
+      <div className="hidden md:block">
+        <motion.aside
+          animate={{ width: collapsed ? 72 : 240 }}
+          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-col h-screen sticky top-0 glass border-r border-white/10 z-40 overflow-hidden"
+        >
         {/* Logo */}
         <div className="flex items-center gap-3 px-4 py-5 border-b border-white/5">
           <div className="w-9 h-9 rounded-xl bg-blood-500 flex items-center justify-center shrink-0 glow-red-sm">
@@ -268,7 +269,8 @@ export default function Sidebar({ role = 'donor' }) {
             {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
           </motion.button>
         </div>
-      </motion.aside>
+        </motion.aside>
+      </div>
     </>
   )
 }
