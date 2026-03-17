@@ -22,7 +22,7 @@ export default function DeveloperProfile() {
     <PageEnter>
       <div className="flex min-h-screen bg-[#0a0a0a]">
         <Sidebar role="admin" />
-        <main className="flex-1 p-6 overflow-auto">
+        <main className="flex-1 p-4 md:p-6 overflow-auto pt-18 md:pt-6">
           <div className="max-w-3xl">
             {/* Hero card */}
             <motion.div
@@ -66,7 +66,7 @@ export default function DeveloperProfile() {
             </motion.div>
 
             {/* Stats row */}
-            <div className="grid grid-cols-4 gap-3 mb-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
               {[
                 { icon: Droplets, label: 'Donors Enabled', value: '48K+' },
                 { icon: Heart, label: 'Lives Impacted', value: '12K+' },

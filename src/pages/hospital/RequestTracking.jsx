@@ -22,7 +22,7 @@ export default function RequestTracking() {
     <PageEnter>
       <div className="flex min-h-screen bg-[#0a0a0a]">
         <Sidebar role="hospital" />
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-4 md:p-6 pt-18 md:pt-6">
           <div className="max-w-3xl">
             <SectionTitle sub="Live status of all blood requests">Request Tracker</SectionTitle>
 

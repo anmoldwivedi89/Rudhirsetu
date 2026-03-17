@@ -25,13 +25,13 @@ export default function AdminDashboard() {
     <PageEnter>
       <div className="flex min-h-screen bg-[#0a0a0a]">
         <Sidebar role="admin" />
-        <main className="flex-1 overflow-auto">
-          <div className="sticky top-0 z-30 glass border-b border-white/5 px-6 py-4">
+        <main className="flex-1 overflow-auto pt-14 md:pt-0">
+          <div className="sticky top-0 z-30 glass border-b border-white/5 px-4 md:px-6 py-4">
             <h1 className="font-syne font-bold text-white text-xl">Admin Dashboard</h1>
             <p className="text-white/40 text-xs">Platform Overview · March 2025</p>
           </div>
 
-          <div className="p-6 max-w-6xl">
+          <div className="p-4 md:p-6 max-w-6xl">
             {/* Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
               <StatCard icon={Users} label="Total Users" value="48,750" sub="+340 this week" color="blue" />
@@ -90,7 +90,7 @@ export default function AdminDashboard() {
             {/* Recent Users table */}
             <div className="mt-8">
               <SectionTitle sub="Latest registrations">Recent Users</SectionTitle>
-              <GlassCard className="overflow-hidden">
+              <GlassCard className="overflow-hidden overflow-x-auto">
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-white/5">

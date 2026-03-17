@@ -25,7 +25,7 @@ export default function CreateRequest() {
       <PageEnter>
         <div className="flex min-h-screen bg-[#0a0a0a]">
           <Sidebar role="hospital" />
-          <main className="flex-1 flex items-center justify-center p-6">
+          <main className="flex-1 flex items-center justify-center p-4 md:p-6 pt-18 md:pt-6">
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -68,7 +68,7 @@ export default function CreateRequest() {
     <PageEnter>
       <div className="flex min-h-screen bg-[#0a0a0a]">
         <Sidebar role="hospital" />
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-4 md:p-6 pt-18 md:pt-6">
           <div className="max-w-xl">
             <SectionTitle sub="Broadcast to nearby verified donors">Create Blood Request</SectionTitle>
 

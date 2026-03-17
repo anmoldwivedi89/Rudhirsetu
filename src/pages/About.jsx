@@ -15,7 +15,7 @@ export default function About() {
               <Droplets size={14} className="text-blood-400" />
               <span className="text-blood-400 text-sm">Our Mission</span>
             </div>
-            <h1 className="font-syne text-5xl font-black text-white mb-4">
+            <h1 className="font-syne text-3xl md:text-5xl font-black text-white mb-4">
               Built to <span className="text-blood-500">Save Lives</span>
             </h1>
             <p className="text-white/50 text-lg max-w-2xl mx-auto leading-relaxed">

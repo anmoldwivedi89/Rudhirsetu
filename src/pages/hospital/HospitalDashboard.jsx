@@ -43,14 +43,14 @@ export default function HospitalDashboard() {
     <PageEnter>
       <div className="flex min-h-screen bg-[#0a0a0a]">
         <Sidebar role="hospital" />
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-auto pt-14 md:pt-0">
           {/* Top Bar */}
-          <div className="sticky top-0 z-30 glass border-b border-white/5 px-6 py-4 flex items-center justify-between">
+          <div className="sticky top-0 z-30 glass border-b border-white/5 px-4 md:px-6 py-4 flex flex-wrap items-center justify-between gap-3">
             <div>
               <h1 className="font-syne font-bold text-white text-xl">Hospital Command Center</h1>
               <p className="text-white/40 text-xs">Apollo Hospitals Mumbai · Dr. Verma (Admin)</p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 md:gap-3 flex-wrap">
               <Link to="/hospital/create-request">
                 <motion.button
                   whileHover={{ boxShadow: '0 0 20px rgba(239,68,68,0.4)' }}
@@ -70,7 +70,7 @@ export default function HospitalDashboard() {
             </div>
           </div>
 
-          <div className="p-6 max-w-6xl">
+          <div className="p-4 md:p-6 max-w-6xl">
             {/* Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               <StatCard icon={Activity} label="Active Requests" value="3" sub="2 critical" color="red" />

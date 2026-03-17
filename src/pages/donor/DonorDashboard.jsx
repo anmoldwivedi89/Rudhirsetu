@@ -48,14 +48,14 @@ export default function DonorDashboard() {
       <div className="flex min-h-screen bg-[#0a0a0a]">
         <Sidebar role="donor" />
 
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-auto pt-14 md:pt-0">
           {/* Top Bar */}
-          <div className="sticky top-0 z-30 glass border-b border-white/5 px-6 py-4 flex items-center justify-between">
+          <div className="sticky top-0 z-30 glass border-b border-white/5 px-4 md:px-6 py-4 flex flex-wrap items-center justify-between gap-3">
             <div>
               <h1 className="font-syne font-bold text-white text-xl">Donor Dashboard</h1>
               <p className="text-white/40 text-xs">Mumbai, Maharashtra · {new Date().toLocaleDateString('en-IN', { weekday: 'long', month: 'short', day: 'numeric' })}</p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 md:gap-3 flex-wrap">
               <Toggle checked={available} onChange={setAvailable} label={available ? 'Available' : 'Unavailable'} />
               <motion.button
                 whileTap={{ scale: 0.95 }}
@@ -75,7 +75,7 @@ export default function DonorDashboard() {
             </div>
           </div>
 
-          <div className="p-6 max-w-6xl">
+          <div className="p-4 md:p-6 max-w-6xl">
             {/* Profile Card */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -101,7 +101,7 @@ export default function DonorDashboard() {
                 <p className="text-white/40 text-sm">📍 Andheri West, Mumbai · Donor since Jan 2023</p>
               </div>
 
-              <div className="grid grid-cols-3 gap-6 text-center">
+              <div className="grid grid-cols-3 gap-3 md:gap-6 text-center">
                 {[
                   { label: 'Donations', value: '8' },
                   { label: 'Lives Saved', value: '8' },
