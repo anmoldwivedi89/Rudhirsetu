@@ -82,7 +82,7 @@ export default function PatientDashboard() {
                 </div>
                 <GlassCard className="p-2 bg-white border border-gray-100">
                   {notifications.map(n => (
-                    <NotifItem key={n.id} {...n} />
+                    <NotifItem key={n.id} {...n} tone="light" />
                   ))}
                 </GlassCard>
               </div>

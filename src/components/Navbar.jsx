@@ -37,7 +37,11 @@ export default function Navbar() {
           >
             <Droplets size={18} className="text-white" />
           </motion.div>
-          <span className="font-syne font-800 text-lg sm:text-xl tracking-tight text-gray-900">
+          <span
+            className={`font-syne font-extrabold text-xl sm:text-2xl tracking-tight ${
+              scrolled ? 'text-gray-900' : 'text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.45)]'
+            }`}
+          >
             Rudhir<span className="text-blood-500">Setu</span>
           </span>
         </Link>

@@ -41,7 +41,7 @@ export default function Sidebar({ role = 'donor' }) {
           <div className="w-8 h-8 rounded-lg bg-blood-500 flex items-center justify-center glow-red-sm">
             <Droplets size={14} className="text-white" />
           </div>
-          <span className="font-syne font-bold text-lg">
+          <span className="font-syne font-extrabold text-xl tracking-tight text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.45)]">
             Rudhir<span className="text-blood-500">Setu</span>
           </span>
         </Link>
@@ -77,7 +77,7 @@ export default function Sidebar({ role = 'donor' }) {
                 <div className="w-9 h-9 rounded-xl bg-blood-500 flex items-center justify-center shrink-0 glow-red-sm">
                   <Droplets size={16} className="text-white" />
                 </div>
-                <span className="font-syne font-bold text-lg whitespace-nowrap">
+                <span className="font-syne font-extrabold text-xl tracking-tight text-white whitespace-nowrap drop-shadow-[0_2px_10px_rgba(0,0,0,0.45)]">
                   Rudhir<span className="text-blood-500">Setu</span>
                 </span>
               </div>
@@ -143,7 +143,7 @@ export default function Sidebar({ role = 'donor' }) {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -10 }}
-                className="font-syne font-bold text-lg whitespace-nowrap"
+                className="font-syne font-extrabold text-xl tracking-tight text-white whitespace-nowrap drop-shadow-[0_2px_10px_rgba(0,0,0,0.45)]"
               >
                 Rudhir<span className="text-blood-500">Setu</span>
               </motion.span>

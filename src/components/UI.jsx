@@ -191,18 +191,21 @@ export function RequestCard({ bloodType, distance, urgency, hospital, time, onAc
 }
 
 // Notification Item
-export function NotifItem({ type, message, time }) {
+export function NotifItem({ type, message, time, tone = 'dark' }) {
   const icons = { alert: '🚨', success: '✅', info: 'ℹ️', warning: '⚠️' }
+  const isLight = tone === 'light'
   return (
     <motion.div
       initial={{ x: 20, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
-      className="flex items-start gap-3 py-3 border-b border-white/5 last:border-0"
+      className={`flex items-start gap-3 py-3 border-b last:border-0 ${
+        isLight ? 'border-gray-100' : 'border-white/5'
+      }`}
     >
       <span className="text-lg mt-0.5">{icons[type] || icons.info}</span>
       <div className="flex-1">
-        <p className="text-sm text-white/80">{message}</p>
-        <p className="text-xs text-white/30 mt-0.5">{time}</p>
+        <p className={`text-sm ${isLight ? 'text-gray-800' : 'text-white/80'}`}>{message}</p>
+        <p className={`text-xs mt-0.5 ${isLight ? 'text-gray-500' : 'text-white/30'}`}>{time}</p>
       </div>
     </motion.div>
   )
@@ -220,5 +223,33 @@ export function AchievementBadge({ emoji, label, earned }) {
       <span className="text-2xl">{emoji}</span>
       <span className="text-xs text-white/60 text-center">{label}</span>
     </motion.div>
+  )
+}
+
+// Page Header
+export function PageHeader({ title, sub, badge, right }) {
+  return (
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between mb-8">
+      <div>
+        <motion.h1
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35 }}
+          className="font-syne text-3xl md:text-4xl font-bold text-gray-900"
+        >
+          {title}
+        </motion.h1>
+        {sub && <p className="text-gray-600 mt-1">{sub}</p>}
+      </div>
+
+      <div className="flex items-center gap-3">
+        {badge && (
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold tracking-wide bg-red-50 text-blood-600 border border-red-100">
+            {badge}
+          </span>
+        )}
+        {right}
+      </div>
+    </div>
   )
 }
