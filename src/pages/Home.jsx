@@ -17,8 +17,6 @@ import {
   BadgeCheck,
   Plus,
   Minus,
-  Github,
-  Linkedin,
 } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import EmergencyModal from '../components/EmergencyModal'
@@ -849,27 +847,10 @@ export default function Home() {
                 <span className="font-syne font-bold text-white">Rudhir<span className="text-blood-500">Setu</span></span>
               </div>
               <p className="text-gray-300 text-sm font-medium">© 2025 RudhirSetu. Built to save lives.</p>
-              <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
+              <div className="flex items-center gap-6">
                 {['Privacy', 'Terms', 'Contact'].map(l => (
                   <a key={l} href="#" className="text-gray-300 hover:text-white text-sm font-semibold transition-colors duration-300">{l}</a>
                 ))}
-                <span className="hidden md:inline h-4 w-px bg-white/10" />
-                <div className="flex items-center gap-3">
-                  <a
-                    href="#"
-                    aria-label="LinkedIn"
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] hover:bg-white/[0.06] transition-colors duration-300"
-                  >
-                    <Linkedin size={18} className="text-gray-200" />
-                  </a>
-                  <a
-                    href="#"
-                    aria-label="GitHub"
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] hover:bg-white/[0.06] transition-colors duration-300"
-                  >
-                    <Github size={18} className="text-gray-200" />
-                  </a>
-                </div>
               </div>
             </div>
           </div>

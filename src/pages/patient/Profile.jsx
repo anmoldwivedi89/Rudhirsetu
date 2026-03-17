@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { Camera, Edit2, Save, MapPin, Phone, Calendar, User, Droplets } from 'lucide-react'
-import { Navigate, useLocation } from 'react-router-dom'
+import { Camera, Edit2, Save, MapPin, Phone, Calendar, User, Droplets, LogOut } from 'lucide-react'
+import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import Sidebar from '../../components/Sidebar'
 import { PageEnter, BloodBadge, GlassCard, PrimaryBtn, SectionTitle } from '../../components/UI'
 import { useAuth } from '../../contexts/AuthContext'
@@ -26,9 +26,12 @@ function InfoItem({ icon: Icon, label, value }) {
 
 export default function PatientProfile() {
   const [editing, setEditing] = useState(false)
-  const { user, profile, loading: authLoading } = useAuth()
+  const { user, profile, loading: authLoading, logout } = useAuth()
   const location = useLocation()
+  const navigate = useNavigate()
   const [saving, setSaving] = useState(false)
+  const [photoPreview, setPhotoPreview] = useState(null)
+  const fileRef = useRef(null)
   const [form, setForm] = useState({ name: '', bloodGroup: '', phone: '', location: '', dob: '' })
 
   useEffect(() => {
@@ -64,6 +67,11 @@ export default function PatientProfile() {
   if (authLoading) return <FullScreenLoader label="Loading your profile…" />
   if (!user) return <Navigate to="/login" state={{ from: location }} replace />
 
+  const handlePhoto = (e) => {
+    const file = e.target.files?.[0]
+    if (file) setPhotoPreview(URL.createObjectURL(file))
+  }
+
   const handleSave = async () => {
     if (!user) return
     setSaving(true)
@@ -81,6 +89,11 @@ export default function PatientProfile() {
     }
   }
 
+  const handleLogout = async () => {
+    await logout()
+    navigate('/login', { replace: true })
+  }
+
   return (
     <PageEnter>
       <div className="flex min-h-screen bg-[#0a0a0a]">
@@ -93,12 +106,17 @@ export default function PatientProfile() {
               {/* Avatar + Name Header */}
               <div className="flex flex-col sm:flex-row sm:items-center gap-5 mb-6">
                 <div className="relative">
-                  <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-blood-500 to-blood-700 flex items-center justify-center font-syne font-black text-3xl text-white">
-                    {initials}
-                  </div>
-                  <motion.button whileTap={{ scale: 0.9 }} className="absolute -bottom-2 -right-2 w-8 h-8 rounded-lg bg-blood-500 flex items-center justify-center">
+                  {photoPreview ? (
+                    <img src={photoPreview} alt="Profile" className="w-24 h-24 rounded-2xl object-cover" />
+                  ) : (
+                    <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-blood-500 to-blood-700 flex items-center justify-center font-syne font-black text-3xl text-white">
+                      {initials}
+                    </div>
+                  )}
+                  <motion.button whileTap={{ scale: 0.9 }} onClick={() => fileRef.current?.click()} className="absolute -bottom-2 -right-2 w-8 h-8 rounded-lg bg-blood-500 flex items-center justify-center">
                     <Camera size={14} className="text-white" />
                   </motion.button>
+                  <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handlePhoto} />
                 </div>
                 <div>
                   <h2 className="font-syne text-xl font-bold text-white">{profile?.name || 'Your Profile'}</h2>
@@ -162,6 +180,15 @@ export default function PatientProfile() {
                 </motion.div>
               )}
             </GlassCard>
+
+            {/* Logout */}
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              onClick={handleLogout}
+              className="w-full mt-3 flex items-center justify-center gap-2 border border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-xl py-3 text-sm font-semibold transition-colors"
+            >
+              <LogOut size={16} /> Logout
+            </motion.button>
           </div>
         </main>
       </div>

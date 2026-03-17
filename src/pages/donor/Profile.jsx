@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { Camera, Edit2, Save, MapPin, Phone, Calendar, Droplets } from 'lucide-react'
-import { Navigate, useLocation } from 'react-router-dom'
+import { Camera, Edit2, Save, MapPin, Phone, Calendar, Droplets, LogOut } from 'lucide-react'
+import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import Sidebar from '../../components/Sidebar'
 import { PageEnter, BloodBadge, GlassCard, PrimaryBtn, SectionTitle } from '../../components/UI'
 import { useAuth } from '../../contexts/AuthContext'
@@ -10,9 +10,12 @@ import FullScreenLoader from '../../components/FullScreenLoader'
 
 export default function DonorProfile() {
   const [editing, setEditing] = useState(false)
-  const { user, profile, loading: authLoading } = useAuth()
+  const { user, profile, loading: authLoading, logout } = useAuth()
   const location = useLocation()
+  const navigate = useNavigate()
   const [saving, setSaving] = useState(false)
+  const [photoPreview, setPhotoPreview] = useState(null)
+  const fileRef = useRef(null)
   const [form, setForm] = useState({ name: '', bloodGroup: '', phone: '', location: '', dob: '', weight: '' })
   const [medical, setMedical] = useState({ diabetes: null, alcohol: null, smoking: null })
 
@@ -40,9 +43,13 @@ export default function DonorProfile() {
     return parts.slice(0, 2).map(p => p[0].toUpperCase()).join('')
   }, [form.name, profile?.name])
 
-  // Never render a blank screen on auth transitions.
   if (authLoading) return <FullScreenLoader label="Loading your profile…" />
   if (!user) return <Navigate to="/login" state={{ from: location }} replace />
+
+  const handlePhoto = (e) => {
+    const file = e.target.files?.[0]
+    if (file) setPhotoPreview(URL.createObjectURL(file))
+  }
 
   const handleSave = async () => {
     if (!user) return
@@ -67,6 +74,11 @@ export default function DonorProfile() {
     }
   }
 
+  const handleLogout = async () => {
+    await logout()
+    navigate('/login', { replace: true })
+  }
+
   return (
     <PageEnter>
       <div className="flex min-h-screen bg-[#0a0a0a]">
@@ -79,12 +91,17 @@ export default function DonorProfile() {
               {/* Avatar */}
               <div className="flex flex-col sm:flex-row sm:items-center gap-5 mb-6">
                 <div className="relative">
-                  <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-blood-500 to-blood-700 flex items-center justify-center font-syne font-black text-3xl text-white">
-                    {initials}
-                  </div>
-                  <motion.button whileTap={{ scale: 0.9 }} className="absolute -bottom-2 -right-2 w-8 h-8 rounded-lg bg-blood-500 flex items-center justify-center">
+                  {photoPreview ? (
+                    <img src={photoPreview} alt="Profile" className="w-24 h-24 rounded-2xl object-cover" />
+                  ) : (
+                    <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-blood-500 to-blood-700 flex items-center justify-center font-syne font-black text-3xl text-white">
+                      {initials}
+                    </div>
+                  )}
+                  <motion.button whileTap={{ scale: 0.9 }} onClick={() => fileRef.current?.click()} className="absolute -bottom-2 -right-2 w-8 h-8 rounded-lg bg-blood-500 flex items-center justify-center">
                     <Camera size={14} className="text-white" />
                   </motion.button>
+                  <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handlePhoto} />
                 </div>
                 <div>
                   <h2 className="font-syne text-xl font-bold text-white">{profile?.name || 'Your Profile'}</h2>
@@ -104,12 +121,12 @@ export default function DonorProfile() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {[
-                  { key: 'name', label: 'Full Name', value: form.name, icon: null, placeholder: 'Your name' },
-                  { key: 'bloodGroup', label: 'Blood Group', value: form.bloodGroup, icon: null, placeholder: 'e.g. B+' },
-                  { key: 'phone', label: 'Phone', value: form.phone, icon: Phone, placeholder: '+91...' },
-                  { key: 'location', label: 'Location', value: form.location, icon: MapPin, placeholder: 'City, State' },
-                  { key: 'dob', label: 'Date of Birth', value: form.dob, icon: Calendar, placeholder: 'YYYY-MM-DD' },
-                  { key: 'weight', label: 'Weight', value: form.weight, icon: null, placeholder: 'e.g. 72 kg' },
+                  { key: 'name', label: 'Full Name', value: form.name, placeholder: 'Your name' },
+                  { key: 'bloodGroup', label: 'Blood Group', value: form.bloodGroup, placeholder: 'e.g. B+' },
+                  { key: 'phone', label: 'Phone', value: form.phone, placeholder: '+91...' },
+                  { key: 'location', label: 'Location', value: form.location, placeholder: 'City, State' },
+                  { key: 'dob', label: 'Date of Birth', value: form.dob, placeholder: 'YYYY-MM-DD' },
+                  { key: 'weight', label: 'Weight', value: form.weight, placeholder: 'e.g. 72 kg' },
                 ].map(field => (
                   <div key={field.key}>
                     <label className="text-white/40 text-xs mb-1.5 block">{field.label.toUpperCase()}</label>
@@ -128,7 +145,7 @@ export default function DonorProfile() {
               </div>
 
               <div className="mt-6">
-                <h3 className="font-syne font-bold text-white mb-3">Health & Safety</h3>
+                <h3 className="font-syne font-bold text-white mb-3">{"Health & Safety"}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   {[
                     { key: 'diabetes', label: 'Diabetes' },
@@ -180,6 +197,15 @@ export default function DonorProfile() {
                 </motion.div>
               )}
             </GlassCard>
+
+            {/* Logout */}
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              onClick={handleLogout}
+              className="w-full mt-3 flex items-center justify-center gap-2 border border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-xl py-3 text-sm font-semibold transition-colors"
+            >
+              <LogOut size={16} /> Logout
+            </motion.button>
           </div>
         </main>
       </div>
