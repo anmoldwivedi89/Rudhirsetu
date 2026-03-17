@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { onAuthStateChanged } from 'firebase/auth'
 import { doc, getDoc } from 'firebase/firestore'
 import { auth, db } from '../firebase'
+import { getCachedUserRole } from '../lib/roles'
 
 const AuthContext = createContext(null)
 
@@ -21,7 +22,14 @@ export function AuthProvider({ children }) {
 
       try {
         const snap = await getDoc(doc(db, 'users', u.uid))
-        setProfile(snap.exists() ? snap.data() : null)
+        if (snap.exists()) setProfile(snap.data())
+        else {
+          const cachedRole = getCachedUserRole(u.uid)
+          setProfile(cachedRole ? { role: cachedRole } : null)
+        }
+      } catch {
+        const cachedRole = getCachedUserRole(u.uid)
+        setProfile(cachedRole ? { role: cachedRole } : null)
       } finally {
         setLoading(false)
       }

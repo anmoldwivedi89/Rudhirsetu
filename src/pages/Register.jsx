@@ -6,7 +6,7 @@ import { PageEnter, PrimaryBtn } from '../components/UI'
 import { auth, db } from '../firebase'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { doc, serverTimestamp, setDoc } from 'firebase/firestore'
-import { getDashboardPath, ROLES } from '../lib/roles'
+import { cacheUserRole, getDashboardPath, ROLES } from '../lib/roles'
 import { useNavigate } from 'react-router-dom'
 import LogoMark from '../components/LogoMark'
 
@@ -52,6 +52,7 @@ export default function Register() {
         updatedAt: serverTimestamp(),
       }, { merge: true })
 
+      cacheUserRole(cred.user.uid, safeRole)
       navigate(getDashboardPath(safeRole), { replace: true })
     } catch (err) {
       setError(err.message)

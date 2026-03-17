@@ -6,7 +6,7 @@ import { PageEnter, PrimaryBtn } from '../components/UI'
 import { auth, db } from '../firebase'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { doc, getDoc } from 'firebase/firestore'
-import { getDashboardPath } from '../lib/roles'
+import { cacheUserRole, getCachedUserRole, getDashboardPath } from '../lib/roles'
 import LogoMark from '../components/LogoMark'
 
 export default function Login() {
@@ -26,7 +26,9 @@ export default function Login() {
       const cred = await signInWithEmailAndPassword(auth, email, password)
       const snap = await getDoc(doc(db, 'users', cred.user.uid))
       const storedRole = snap.exists() ? snap.data()?.role : null
-      navigate(getDashboardPath(storedRole || role), { replace: true })
+      const finalRole = storedRole || getCachedUserRole(cred.user.uid) || role
+      cacheUserRole(cred.user.uid, finalRole)
+      navigate(getDashboardPath(finalRole), { replace: true })
     } catch (err) {
       setError(err.message)
     } finally {
