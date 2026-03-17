@@ -107,14 +107,14 @@ export default function Home() {
                   <span className="text-blood-400 text-sm font-medium">Live Network — 48K+ Active Donors</span>
                 </motion.div>
 
-                <h1 className="font-syne text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[1.05] mb-4 sm:mb-6">
+                <h1 className="font-syne text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-gray-900 leading-[1.05] mb-4 sm:mb-6">
                   Saving Lives
                   <br />
                   <span className="text-glow text-blood-500">Through Real-Time</span>
                   <br />
                   Blood Connection
                 </h1>
-                <p className="text-white/50 text-base sm:text-lg leading-relaxed mb-6 sm:mb-8 max-w-lg">
+                <p className="text-gray-500 text-base sm:text-lg leading-relaxed mb-6 sm:mb-8 max-w-lg">
                   The fastest, smartest platform to connect emergency blood requests with verified donors. Every second counts.
                 </p>
 
@@ -123,7 +123,7 @@ export default function Home() {
                     <motion.button
                       whileHover={{ scale: 1.03, boxShadow: '0 0 40px rgba(239,68,68,0.5)' }}
                       whileTap={{ scale: 0.97 }}
-                      className="flex items-center justify-center gap-2 bg-blood-500 hover:bg-blood-600 text-white font-semibold px-5 sm:px-7 py-3 sm:py-4 rounded-2xl text-sm sm:text-base transition-all w-full sm:w-auto"
+                      className="flex items-center justify-center gap-2 bg-blood-500 hover:bg-blood-600 text-gray-900 font-semibold px-5 sm:px-7 py-3 sm:py-4 rounded-2xl text-sm sm:text-base transition-all w-full sm:w-auto"
                     >
                       <Droplets size={18} />
                       Become a Donor
@@ -144,7 +144,7 @@ export default function Home() {
                 <div className="flex items-center gap-4 sm:gap-6 mt-8 sm:mt-10">
                   <div className="flex -space-x-2">
                     {['A', 'B', 'C', 'D'].map((l, i) => (
-                      <div key={l} className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-blood-500/40 to-blood-700/40 border-2 border-black flex items-center justify-center text-[10px] sm:text-xs font-bold text-white">
+                      <div key={l} className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-blood-500/40 to-blood-700/40 border-2 border-black flex items-center justify-center text-[10px] sm:text-xs font-bold text-gray-900">
                         {l}
                       </div>
                     ))}
@@ -153,7 +153,7 @@ export default function Home() {
                     <div className="flex items-center gap-1 mb-0.5">
                       {[1,2,3,4,5].map(i => <Star key={i} size={12} className="text-yellow-400 fill-yellow-400" />)}
                     </div>
-                    <p className="text-white/40 text-xs">Trusted by 12,000+ lives saved</p>
+                    <p className="text-gray-500 text-xs">Trusted by 12,000+ lives saved</p>
                   </div>
                 </div>
               </motion.div>
@@ -173,7 +173,7 @@ export default function Home() {
                 >
                   {/* Live indicator */}
                   <div className="flex items-center justify-between mb-6">
-                    <span className="text-white/50 text-sm font-medium">Active Requests</span>
+                    <span className="text-gray-500 text-sm font-medium">Active Requests</span>
                     <div className="flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
                       <span className="text-green-400 text-xs">LIVE</span>
@@ -196,8 +196,8 @@ export default function Home() {
                       <div className="flex items-center gap-3">
                         <span className="font-syne font-black text-blood-400 text-lg w-10">{req.blood}</span>
                         <div>
-                          <p className="text-white text-sm font-medium">{req.hospital}</p>
-                          <p className="text-white/40 text-xs">📍 {req.dist}</p>
+                          <p className="text-gray-900 text-sm font-medium">{req.hospital}</p>
+                          <p className="text-gray-500 text-xs">📍 {req.dist}</p>
                         </div>
                       </div>
                       <span className={`text-xs px-2 py-1 rounded-lg border font-medium ${
@@ -213,10 +213,10 @@ export default function Home() {
                 <motion.div
                   animate={{ y: [0, 8, 0] }}
                   transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-                  className="absolute -top-6 -right-6 glass rounded-2xl px-4 py-3 border border-white/10"
+                  className="absolute -top-6 -right-6 glass rounded-2xl px-4 py-3 border border-gray-200"
                 >
-                  <p className="text-white/50 text-xs">Match Found</p>
-                  <p className="text-white font-syne font-bold text-sm">Donor: 0.8 km 🎯</p>
+                  <p className="text-gray-500 text-xs">Match Found</p>
+                  <p className="text-gray-900 font-syne font-bold text-sm">Donor: 0.8 km 🎯</p>
                 </motion.div>
 
                 <motion.div
@@ -225,7 +225,7 @@ export default function Home() {
                   className="absolute -bottom-4 -left-6 glass-red rounded-2xl px-4 py-3 border border-blood-500/30"
                 >
                   <p className="text-blood-400 text-xs font-medium">⚡ Response Time</p>
-                  <p className="text-white font-syne font-bold text-xl">4.2 min</p>
+                  <p className="text-gray-900 font-syne font-bold text-xl">4.2 min</p>
                 </motion.div>
               </motion.div>
             </div>
@@ -233,7 +233,7 @@ export default function Home() {
         </section>
 
         {/* Stats */}
-        <section className="py-16 border-y border-white/5">
+        <section className="py-16 border-y border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               {stats.map((s, i) => (
@@ -248,7 +248,7 @@ export default function Home() {
                   <p className="font-syne text-3xl sm:text-4xl md:text-5xl font-black text-blood-500 text-glow">
                     <AnimatedCounter end={s.value} suffix={s.suffix} />
                   </p>
-                  <p className="text-white/40 text-sm mt-2">{s.label}</p>
+                  <p className="text-gray-500 text-sm mt-2">{s.label}</p>
                 </motion.div>
               ))}
             </div>
@@ -264,10 +264,10 @@ export default function Home() {
               viewport={{ once: true }}
               className="text-center mb-16"
             >
-              <h2 className="font-syne text-3xl sm:text-4xl md:text-5xl font-black text-white mb-4">
+              <h2 className="font-syne text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 mb-4">
                 Why <span className="text-blood-500">RudhirSetu</span>?
               </h2>
-              <p className="text-white/40 text-lg max-w-2xl mx-auto">
+              <p className="text-gray-500 text-lg max-w-2xl mx-auto">
                 We've rebuilt blood donation from the ground up — faster, smarter, and more reliable than anything before.
               </p>
             </motion.div>
@@ -290,13 +290,13 @@ export default function Home() {
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.08 }}
                     whileHover={{ y: -6, transition: { duration: 0.2 } }}
-                    className="glass rounded-2xl p-6 border border-white/5 hover:border-white/10 transition-all"
+                    className="glass rounded-2xl p-6 border border-gray-200 hover:border-gray-200 transition-all"
                   >
                     <div className={`inline-flex p-3 rounded-xl border mb-4 ${colorMap[f.color]}`}>
                       <f.icon size={22} />
                     </div>
-                    <h3 className="font-syne font-bold text-white text-lg mb-2">{f.title}</h3>
-                    <p className="text-white/40 text-sm leading-relaxed">{f.desc}</p>
+                    <h3 className="font-syne font-bold text-gray-900 text-lg mb-2">{f.title}</h3>
+                    <p className="text-gray-500 text-sm leading-relaxed">{f.desc}</p>
                   </motion.div>
                 )
               })}
@@ -305,13 +305,13 @@ export default function Home() {
         </section>
 
         {/* Testimonials */}
-        <section className="py-20 border-t border-white/5">
+        <section className="py-20 border-t border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <motion.h2
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              className="font-syne text-3xl font-black text-center text-white mb-12"
+              className="font-syne text-3xl font-black text-center text-gray-900 mb-12"
             >
               Trusted by <span className="text-blood-500">Thousands</span>
             </motion.h2>
@@ -331,8 +331,8 @@ export default function Home() {
                       {t.avatar}
                     </div>
                     <div>
-                      <p className="text-white font-medium text-sm">{t.name}</p>
-                      <p className="text-white/40 text-xs">{t.role}</p>
+                      <p className="text-gray-900 font-medium text-sm">{t.name}</p>
+                      <p className="text-gray-500 text-xs">{t.role}</p>
                     </div>
                   </div>
                 </motion.div>
@@ -357,16 +357,16 @@ export default function Home() {
               >
                 🩸
               </motion.div>
-              <h2 className="font-syne text-2xl sm:text-4xl md:text-5xl font-black text-white mb-4">
+              <h2 className="font-syne text-2xl sm:text-4xl md:text-5xl font-black text-gray-900 mb-4">
                 One drop can save<br /><span className="text-blood-500">three lives.</span>
               </h2>
-              <p className="text-white/50 text-lg mb-8">Join the network. Be the reason someone's heart keeps beating.</p>
+              <p className="text-gray-500 text-lg mb-8">Join the network. Be the reason someone's heart keeps beating.</p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Link to="/register">
                   <motion.button
                     whileHover={{ scale: 1.04, boxShadow: '0 0 40px rgba(239,68,68,0.6)' }}
                     whileTap={{ scale: 0.97 }}
-                    className="bg-blood-500 text-white font-bold px-8 py-4 rounded-2xl text-base"
+                    className="bg-blood-500 text-gray-900 font-bold px-8 py-4 rounded-2xl text-base"
                   >
                     Register as Donor
                   </motion.button>
@@ -375,7 +375,7 @@ export default function Home() {
                   <motion.button
                     whileHover={{ scale: 1.04 }}
                     whileTap={{ scale: 0.97 }}
-                    className="glass text-white font-semibold px-8 py-4 rounded-2xl text-base border border-white/10"
+                    className="glass text-gray-900 font-semibold px-8 py-4 rounded-2xl text-base border border-gray-200"
                   >
                     Register Hospital
                   </motion.button>
@@ -386,18 +386,18 @@ export default function Home() {
         </section>
 
         {/* Footer */}
-        <footer className="border-t border-white/5 py-10">
+        <footer className="border-t border-gray-200 py-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-lg bg-blood-500 flex items-center justify-center">
-                <Droplets size={14} className="text-white" />
+                <Droplets size={14} className="text-gray-900" />
               </div>
-              <span className="font-syne font-bold text-white">Rudhir<span className="text-blood-500">Setu</span></span>
+              <span className="font-syne font-bold text-gray-900">Rudhir<span className="text-blood-500">Setu</span></span>
             </div>
-            <p className="text-white/30 text-sm">© 2025 RudhirSetu. Built to save lives.</p>
+            <p className="text-gray-400 text-sm">© 2025 RudhirSetu. Built to save lives.</p>
             <div className="flex gap-6">
               {['Privacy', 'Terms', 'Contact'].map(l => (
-                <a key={l} href="#" className="text-white/30 hover:text-white/60 text-sm transition-colors">{l}</a>
+                <a key={l} href="#" className="text-gray-400 hover:text-white/60 text-sm transition-colors">{l}</a>
               ))}
             </div>
           </div>

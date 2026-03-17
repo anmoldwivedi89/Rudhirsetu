@@ -23,7 +23,7 @@ export default function Register() {
     setError('')
     try {
       await createUserWithEmailAndPassword(auth, email, password)
-      window.location.href = role === 'donor' ? '/donor/dashboard' : role === 'hospital' ? '/hospital/dashboard' : '/donor/dashboard'
+      window.location.href = role === 'donor' ? '/donor/dashboard' : role === 'hospital' ? '/hospital/dashboard' : '/patient/dashboard'
     } catch (err) {
       setError(err.message)
     } finally {

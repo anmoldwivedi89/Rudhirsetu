@@ -14,6 +14,7 @@ import RequestTracking from './pages/hospital/RequestTracking'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import UserManagement from './pages/admin/UserManagement'
 import DeveloperProfile from './pages/admin/DeveloperProfile'
+import PatientDashboard from './pages/patient/PatientDashboard'
 
 export default function App() {
   return (
@@ -34,6 +35,7 @@ export default function App() {
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/admin/users" element={<UserManagement />} />
         <Route path="/admin/developer" element={<DeveloperProfile />} />
+        <Route path="/patient/dashboard" element={<PatientDashboard />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>
