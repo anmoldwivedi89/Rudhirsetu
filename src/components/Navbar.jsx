@@ -29,15 +29,15 @@ export default function Navbar() {
         scrolled ? 'glass border-b border-white/5 py-3' : 'py-5'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2 group">
           <motion.div
             whileHover={{ scale: 1.1, rotate: 5 }}
-            className="w-9 h-9 rounded-xl bg-blood-500 flex items-center justify-center glow-red-sm"
+            className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-blood-500 flex items-center justify-center glow-red-sm"
           >
             <Droplets size={18} className="text-white" />
           </motion.div>
-          <span className="font-syne font-800 text-xl tracking-tight">
+          <span className="font-syne font-800 text-lg sm:text-xl tracking-tight">
             Rudhir<span className="text-blood-500">Setu</span>
           </span>
         </Link>

@@ -88,8 +88,8 @@ export default function Home() {
             />
           ))}
 
-          <div className="relative max-w-7xl mx-auto px-6 pt-32 pb-20">
-            <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 pt-24 sm:pt-32 pb-16 sm:pb-20">
+            <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
               {/* Left */}
               <motion.div
                 initial={{ opacity: 0, x: -40 }}
@@ -107,14 +107,14 @@ export default function Home() {
                   <span className="text-blood-400 text-sm font-medium">Live Network — 48K+ Active Donors</span>
                 </motion.div>
 
-                <h1 className="font-syne text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[1.05] mb-6">
+                <h1 className="font-syne text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[1.05] mb-4 sm:mb-6">
                   Saving Lives
                   <br />
                   <span className="text-glow text-blood-500">Through Real-Time</span>
                   <br />
                   Blood Connection
                 </h1>
-                <p className="text-white/50 text-lg leading-relaxed mb-8 max-w-lg">
+                <p className="text-white/50 text-base sm:text-lg leading-relaxed mb-6 sm:mb-8 max-w-lg">
                   The fastest, smartest platform to connect emergency blood requests with verified donors. Every second counts.
                 </p>
 
@@ -123,7 +123,7 @@ export default function Home() {
                     <motion.button
                       whileHover={{ scale: 1.03, boxShadow: '0 0 40px rgba(239,68,68,0.5)' }}
                       whileTap={{ scale: 0.97 }}
-                      className="flex items-center gap-2 bg-blood-500 hover:bg-blood-600 text-white font-semibold px-7 py-4 rounded-2xl text-base transition-all"
+                      className="flex items-center justify-center gap-2 bg-blood-500 hover:bg-blood-600 text-white font-semibold px-5 sm:px-7 py-3 sm:py-4 rounded-2xl text-sm sm:text-base transition-all w-full sm:w-auto"
                     >
                       <Droplets size={18} />
                       Become a Donor
@@ -134,17 +134,17 @@ export default function Home() {
                     whileHover={{ scale: 1.03, boxShadow: '0 0 30px rgba(239,68,68,0.3)' }}
                     whileTap={{ scale: 0.97 }}
                     onClick={() => setModalOpen(true)}
-                    className="flex items-center gap-2 glass-red border border-blood-500/40 text-blood-400 font-semibold px-7 py-4 rounded-2xl text-base transition-all animate-pulse-glow"
+                    className="flex items-center justify-center gap-2 glass-red border border-blood-500/40 text-blood-400 font-semibold px-5 sm:px-7 py-3 sm:py-4 rounded-2xl text-sm sm:text-base transition-all animate-pulse-glow w-full sm:w-auto"
                   >
                     🚨 Request Blood Now
                   </motion.button>
                 </div>
 
                 {/* Trust indicators */}
-                <div className="flex items-center gap-6 mt-10">
+                <div className="flex items-center gap-4 sm:gap-6 mt-8 sm:mt-10">
                   <div className="flex -space-x-2">
                     {['A', 'B', 'C', 'D'].map((l, i) => (
-                      <div key={l} className="w-9 h-9 rounded-full bg-gradient-to-br from-blood-500/40 to-blood-700/40 border-2 border-black flex items-center justify-center text-xs font-bold text-white">
+                      <div key={l} className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-blood-500/40 to-blood-700/40 border-2 border-black flex items-center justify-center text-[10px] sm:text-xs font-bold text-white">
                         {l}
                       </div>
                     ))}
@@ -163,7 +163,7 @@ export default function Home() {
                 initial={{ opacity: 0, x: 40, scale: 0.9 }}
                 animate={{ opacity: 1, x: 0, scale: 1 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
-                className="relative"
+                className="relative hidden lg:block"
               >
                 {/* Main card */}
                 <motion.div
@@ -234,7 +234,7 @@ export default function Home() {
 
         {/* Stats */}
         <section className="py-16 border-y border-white/5">
-          <div className="max-w-7xl mx-auto px-6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               {stats.map((s, i) => (
                 <motion.div
@@ -245,7 +245,7 @@ export default function Home() {
                   transition={{ delay: i * 0.1 }}
                   className="text-center"
                 >
-                  <p className="font-syne text-4xl md:text-5xl font-black text-blood-500 text-glow">
+                  <p className="font-syne text-3xl sm:text-4xl md:text-5xl font-black text-blood-500 text-glow">
                     <AnimatedCounter end={s.value} suffix={s.suffix} />
                   </p>
                   <p className="text-white/40 text-sm mt-2">{s.label}</p>
@@ -257,14 +257,14 @@ export default function Home() {
 
         {/* Features */}
         <section className="py-24">
-          <div className="max-w-7xl mx-auto px-6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               className="text-center mb-16"
             >
-              <h2 className="font-syne text-4xl md:text-5xl font-black text-white mb-4">
+              <h2 className="font-syne text-3xl sm:text-4xl md:text-5xl font-black text-white mb-4">
                 Why <span className="text-blood-500">RudhirSetu</span>?
               </h2>
               <p className="text-white/40 text-lg max-w-2xl mx-auto">
@@ -306,7 +306,7 @@ export default function Home() {
 
         {/* Testimonials */}
         <section className="py-20 border-t border-white/5">
-          <div className="max-w-7xl mx-auto px-6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <motion.h2
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
@@ -343,21 +343,21 @@ export default function Home() {
 
         {/* CTA */}
         <section className="py-24">
-          <div className="max-w-4xl mx-auto px-6 text-center">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              className="glass-red rounded-3xl p-12 border border-blood-500/20 glow-red"
+              className="glass-red rounded-3xl p-6 sm:p-12 border border-blood-500/20 glow-red"
             >
               <motion.div
                 animate={{ scale: [1, 1.05, 1] }}
                 transition={{ duration: 3, repeat: Infinity }}
-                className="text-6xl mb-6"
+                className="text-4xl sm:text-6xl mb-4 sm:mb-6"
               >
                 🩸
               </motion.div>
-              <h2 className="font-syne text-4xl md:text-5xl font-black text-white mb-4">
+              <h2 className="font-syne text-2xl sm:text-4xl md:text-5xl font-black text-white mb-4">
                 One drop can save<br /><span className="text-blood-500">three lives.</span>
               </h2>
               <p className="text-white/50 text-lg mb-8">Join the network. Be the reason someone's heart keeps beating.</p>
@@ -387,7 +387,7 @@ export default function Home() {
 
         {/* Footer */}
         <footer className="border-t border-white/5 py-10">
-          <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-lg bg-blood-500 flex items-center justify-center">
                 <Droplets size={14} className="text-white" />

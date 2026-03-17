@@ -130,15 +130,15 @@ export default function FindBlood() {
     <PageEnter>
       <div className="min-h-screen bg-[#0a0a0a]">
         <Navbar />
-        <div className="max-w-7xl mx-auto px-6 pt-28 pb-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-24 sm:pt-28 pb-12 sm:pb-16">
           {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="mb-8"
           >
-            <h1 className="font-syne text-4xl font-black text-white mb-2">Find Blood</h1>
-            <p className="text-white/40">Real-time blood availability near your location</p>
+            <h1 className="font-syne text-2xl sm:text-4xl font-black text-white mb-2">Find Blood</h1>
+            <p className="text-white/40 text-sm sm:text-base">Real-time blood availability near your location</p>
           </motion.div>
 
           {/* Search + Filter bar */}
@@ -161,7 +161,7 @@ export default function FindBlood() {
             <motion.button
               whileTap={{ scale: 0.97 }}
               onClick={() => setModalOpen(true)}
-              className="flex items-center gap-2 bg-blood-500 text-white font-medium px-5 py-3 rounded-xl hover:bg-blood-600 transition-colors glow-red-sm"
+              className="flex items-center justify-center gap-2 bg-blood-500 text-white font-medium px-4 sm:px-5 py-3 rounded-xl hover:bg-blood-600 transition-colors glow-red-sm text-sm sm:text-base w-full md:w-auto"
             >
               🚨 Emergency Request
             </motion.button>
@@ -206,7 +206,7 @@ export default function FindBlood() {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.06 }}
-                  className="glass rounded-2xl p-5 border border-white/5 hover:border-white/10 transition-all"
+                  className="glass rounded-2xl p-3 sm:p-5 border border-white/5 hover:border-white/10 transition-all"
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
@@ -218,7 +218,7 @@ export default function FindBlood() {
                     </div>
                     <UrgencyTag level={r.urgency} />
                   </div>
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                     <div className="flex items-center gap-2 text-white/40 text-sm">
                       <MapPin size={14} className="text-blood-400" />
                       <span>{r.dist} away</span>
@@ -254,7 +254,7 @@ export default function FindBlood() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.2 }}
-                className="sticky top-24 h-[500px] rounded-2xl overflow-hidden border border-white/10"
+                className="sticky top-24 h-[300px] sm:h-[500px] rounded-2xl overflow-hidden border border-white/10"
               >
                 <MapSimulation results={results} />
               </motion.div>

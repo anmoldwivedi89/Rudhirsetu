@@ -2,62 +2,97 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
 @layer base {
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
   body {
-    background: #0a0a0a;
-    color: #f0f0f0;
-    font-family: 'DM Sans', sans-serif;
+    background: #f5f5f7;
+    color: #1a1a2e;
+    font-family: 'Poppins', 'DM Sans', sans-serif;
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
   }
   h1, h2, h3, h4, h5 {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
   }
 }
 
 @layer utilities {
-  .glass {
-    background: rgba(255,255,255,0.04);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255,255,255,0.08);
+  .card {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
   }
-  .glass-red {
-    background: rgba(239,68,68,0.08);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(239,68,68,0.2);
+  .card-hover {
+    transition: transform 0.2s, box-shadow 0.2s;
   }
-  .glow-red {
-    box-shadow: 0 0 30px rgba(239,68,68,0.4), 0 0 60px rgba(239,68,68,0.15);
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.1);
   }
-  .glow-red-sm {
-    box-shadow: 0 0 15px rgba(239,68,68,0.3);
+  .card-red {
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(220,38,38,0.25);
   }
-  .text-glow {
-    text-shadow: 0 0 30px rgba(239,68,68,0.6);
+  .card-red-light {
+    background: #fef2f2;
+    border-radius: 20px;
   }
-  .shimmer-bg {
-    background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
-    background-size: 200% 100%;
-    animation: shimmer 2s linear infinite;
+  .btn-primary {
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 12px 24px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 15px rgba(220,38,38,0.3);
+  }
+  .btn-primary:hover {
+    box-shadow: 0 6px 25px rgba(220,38,38,0.4);
+    transform: translateY(-1px);
+  }
+  .btn-outline {
+    background: transparent;
+    color: #dc2626;
+    border: 1.5px solid #dc2626;
+    border-radius: 14px;
+    padding: 12px 24px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-outline:hover {
+    background: #fef2f2;
+  }
+  .glass-white {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
   }
   .scrollbar-hide::-webkit-scrollbar { display: none; }
   .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 1px solid #f0f0f0;
+    padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+    z-index: 50;
+    box-shadow: 0 -2px 20px rgba(0,0,0,0.05);
+  }
 }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: #0a0a0a; }
-::-webkit-scrollbar-thumb { background: #ef4444; border-radius: 2px; }
-
-/* Noise texture overlay */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 9999;
-  opacity: 0.4;
-}
+::-webkit-scrollbar-track { background: #f5f5f7; }
+::-webkit-scrollbar-thumb { background: #dc2626; border-radius: 2px; }
