@@ -25,6 +25,11 @@ const navGroups = {
     { icon: PlusCircle, label: 'Create Request', to: '/hospital/create-request' },
     { icon: Activity, label: 'Track Requests', to: '/hospital/tracking' },
   ],
+  patient: [
+    { icon: LayoutDashboard, label: 'Dashboard', to: '/patient/dashboard' },
+    { icon: User, label: 'Profile', to: '/patient/profile' },
+    { icon: History, label: 'History', to: '/patient/history' },
+  ],
   admin: [
     { icon: LayoutDashboard, label: 'Dashboard', to: '/admin/dashboard' },
     { icon: Users, label: 'Users', to: '/admin/users' },
