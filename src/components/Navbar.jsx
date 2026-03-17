@@ -37,7 +37,7 @@ export default function Navbar() {
           >
             <Droplets size={18} className="text-white" />
           </motion.div>
-          <span className="font-syne font-800 text-lg sm:text-xl tracking-tight">
+          <span className="font-syne font-800 text-lg sm:text-xl tracking-tight text-gray-900">
             Rudhir<span className="text-blood-500">Setu</span>
           </span>
         </Link>
@@ -49,7 +49,7 @@ export default function Navbar() {
               key={to}
               to={to}
               className={`text-sm font-medium transition-colors duration-200 hover:text-blood-500 ${
-                location.pathname === to ? 'text-blood-500' : 'text-white/60'
+                location.pathname === to ? 'text-blood-500' : 'text-gray-600'
               }`}
             >
               {label}
@@ -63,7 +63,7 @@ export default function Navbar() {
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              className="text-sm text-white/70 hover:text-white transition-colors px-4 py-2"
+              className="text-sm text-gray-700 hover:text-gray-900 transition-colors px-4 py-2"
             >
               Sign In
             </motion.button>
@@ -83,7 +83,7 @@ export default function Navbar() {
         <motion.button
           whileTap={{ scale: 0.9 }}
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="md:hidden text-white/70"
+          className="md:hidden text-gray-900"
         >
           {mobileOpen ? <X size={22} /> : <Menu size={22} />}
         </motion.button>
@@ -96,21 +96,21 @@ export default function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden glass border-t border-white/5 px-6 py-4 flex flex-col gap-4"
+            className="md:hidden glass border-t border-gray-200 px-6 py-4 flex flex-col gap-4"
           >
             {links.map(({ to, label }) => (
               <Link
                 key={to}
                 to={to}
                 onClick={() => setMobileOpen(false)}
-                className="text-white/70 hover:text-white transition-colors"
+                className="text-gray-700 hover:text-gray-900 transition-colors"
               >
                 {label}
               </Link>
             ))}
-            <div className="flex gap-3 pt-2 border-t border-white/10">
+            <div className="flex gap-3 pt-2 border-t border-gray-200">
               <Link to="/login" onClick={() => setMobileOpen(false)} className="flex-1">
-                <button className="w-full text-sm py-2.5 rounded-xl glass text-white/70">Sign In</button>
+                <button className="w-full text-sm py-2.5 rounded-xl glass text-gray-700">Sign In</button>
               </Link>
               <Link to="/register" onClick={() => setMobileOpen(false)} className="flex-1">
                 <button className="w-full text-sm py-2.5 rounded-xl bg-blood-500 text-white font-medium">Get Started</button>

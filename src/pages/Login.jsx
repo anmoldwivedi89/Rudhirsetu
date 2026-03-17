@@ -20,7 +20,7 @@ export default function Login() {
     setError('')
     try {
       await signInWithEmailAndPassword(auth, email, password)
-      window.location.href = role === 'donor' ? '/donor/dashboard' : role === 'hospital' ? '/hospital/dashboard' : '/admin/dashboard'
+      window.location.href = role === 'donor' ? '/donor/dashboard' : role === 'hospital' ? '/hospital/dashboard' : '/donor/dashboard'
     } catch (err) {
       setError(err.message)
     } finally {
@@ -64,7 +64,7 @@ export default function Login() {
           >
             {/* Role Tabs */}
             <div className="flex gap-2 mb-6 p-1 glass rounded-xl">
-              {['donor', 'hospital', 'admin'].map(r => (
+              {['donor', 'hospital', 'patient'].map(r => (
                 <motion.button
                   key={r}
                   whileTap={{ scale: 0.97 }}

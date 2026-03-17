@@ -23,7 +23,7 @@ export default function Register() {
     setError('')
     try {
       await createUserWithEmailAndPassword(auth, email, password)
-      window.location.href = role === 'donor' ? '/donor/dashboard' : '/hospital/dashboard'
+      window.location.href = role === 'donor' ? '/donor/dashboard' : role === 'hospital' ? '/hospital/dashboard' : '/donor/dashboard'
     } catch (err) {
       setError(err.message)
     } finally {
@@ -74,8 +74,9 @@ export default function Register() {
             {/* Role Select */}
             <div className="flex gap-3 mb-6">
               {[
-                { id: 'donor', label: '🩸 Donor', desc: 'I want to donate blood' },
-                { id: 'hospital', label: '🏥 Hospital', desc: 'We need donors' },
+                { id: 'donor', label: '🩸 Donor', desc: 'I want to donate' },
+                { id: 'hospital', label: '🏥 Hospital', desc: 'We need blood' },
+                { id: 'patient', label: '🚑 Patient', desc: 'I need blood' },
               ].map(r => (
                 <motion.button
                   key={r.id}
