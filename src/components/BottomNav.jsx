@@ -3,37 +3,68 @@ import { Activity, Clock, Home, Lock, User } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../contexts/AuthContext.jsx";
-
-const NAV_ITEMS = [
-  { to: "/", label: "Home", Icon: Home, activeMatch: (p) => p === "/" },
-  {
-    to: "/donor/requests",
-    label: "Requests",
-    Icon: Activity,
-    activeMatch: (p) => p.startsWith("/donor/requests"),
-  },
-  {
-    to: "/donor/history",
-    label: "History",
-    Icon: Clock,
-    activeMatch: (p) => p.startsWith("/donor/history"),
-  },
-  {
-    to: "/donor/profile",
-    label: "Profile",
-    Icon: User,
-    activeMatch: (p) => p.startsWith("/donor/profile"),
-  },
-];
+import Loader from "./Loader.jsx";
 
 export default function BottomNav() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const pathname = location.pathname || "/";
   const [restrictedTab, setRestrictedTab] = useState(null);
+  const hideNav = pathname === "/login" || pathname === "/register";
 
-  if (pathname === "/login" || pathname === "/register") return null;
+  const role = profile?.role || null;
+
+  const navItems = useMemo(() => {
+    const base = [{ to: "/", label: "Home", Icon: Home, activeMatch: (p) => p === "/" }];
+
+    if (role === "hospital") {
+      return [
+        ...base,
+        {
+          to: "/hospital/requests",
+          label: "Requests",
+          Icon: Activity,
+          activeMatch: (p) => p.startsWith("/hospital/requests"),
+        },
+        {
+          to: "/hospital/history",
+          label: "History",
+          Icon: Clock,
+          activeMatch: (p) => p.startsWith("/hospital/history"),
+        },
+        {
+          to: "/hospital/profile",
+          label: "Profile",
+          Icon: User,
+          activeMatch: (p) => p.startsWith("/hospital/profile"),
+        },
+      ];
+    }
+
+    // Default: donor-style nav (also used for logged-out users)
+    return [
+      ...base,
+      {
+        to: "/donor/requests",
+        label: "Requests",
+        Icon: Activity,
+        activeMatch: (p) => p.startsWith("/donor/requests"),
+      },
+      {
+        to: "/donor/history",
+        label: "History",
+        Icon: Clock,
+        activeMatch: (p) => p.startsWith("/donor/history"),
+      },
+      {
+        to: "/donor/profile",
+        label: "Profile",
+        Icon: User,
+        activeMatch: (p) => p.startsWith("/donor/profile"),
+      },
+    ];
+  }, [role]);
 
   const restrictedCopy = useMemo(() => {
     if (!restrictedTab) return null;
@@ -61,14 +92,15 @@ export default function BottomNav() {
 
   return (
     <>
-      <nav className="md:hidden fixed bottom-4 left-4 right-4 z-50">
-        <div className="mx-auto max-w-md rounded-2xl border border-white/[0.08] bg-[rgba(15,15,15,0.6)] backdrop-blur-md shadow-[0_12px_35px_rgba(0,0,0,0.45),0_0_28px_rgba(239,68,68,0.16)]">
+      {hideNav ? (
+        <Loader />
+      ) : (
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 px-4 pt-2 pb-[calc(12px+env(safe-area-inset-bottom))]">
+        <div className="mx-auto w-full max-w-md rounded-2xl border border-white/[0.08] bg-[rgba(15,15,15,0.70)] backdrop-blur-md shadow-[0_12px_35px_rgba(0,0,0,0.45),0_0_28px_rgba(239,68,68,0.16)]">
           <div className="grid grid-cols-4 gap-1 p-2">
-            {NAV_ITEMS.map(({ to, label, Icon, activeMatch }) => {
+            {navItems.map(({ to, label, Icon, activeMatch }) => {
               const isProtected =
-                to === "/donor/requests" ||
-                to === "/donor/history" ||
-                to === "/donor/profile";
+                to !== "/";
               const locked = isProtected && !user;
 
               return (
@@ -83,7 +115,7 @@ export default function BottomNav() {
                   className={({ isActive }) => {
                     const active = isActive || activeMatch(pathname);
                     return [
-                      "group relative flex flex-col items-center justify-center gap-1 rounded-xl px-2 py-2.5",
+                      "group relative flex flex-col items-center justify-center gap-1 rounded-xl px-2 py-3 min-h-[44px]",
                       "transition-all duration-300 ease-in-out select-none",
                   locked ? "opacity-60 cursor-pointer" : "opacity-70 hover:opacity-100",
                       locked ? "" : "hover:scale-105 active:scale-95",
@@ -134,6 +166,7 @@ export default function BottomNav() {
           </div>
         </div>
       </nav>
+      )}
 
       <AnimatePresence>
         {restrictedTab && (

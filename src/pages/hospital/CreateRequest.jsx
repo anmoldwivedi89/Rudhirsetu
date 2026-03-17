@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle, AlertTriangle, MapPin } from 'lucide-react'
-import Sidebar from '../../components/Sidebar'
 import { PageEnter, SectionTitle, PrimaryBtn, GlassCard } from '../../components/UI'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
@@ -40,42 +39,42 @@ export default function CreateRequest() {
   if (success) {
     return (
       <PageEnter>
-        <div className="flex min-h-screen bg-[#0a0a0a]">
-          <Sidebar role="hospital" />
-          <main className="flex-1 flex items-center justify-center p-4 md:p-6 pt-18 md:pt-6">
+        <div className="w-full flex items-center justify-center py-10">
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="text-center max-w-sm"
+          >
             <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              className="text-center max-w-sm"
+              animate={{ scale: [1, 1.15, 1] }}
+              transition={{ duration: 0.5 }}
+              className="w-24 h-24 rounded-full bg-green-500/20 border border-green-500/40 flex items-center justify-center mx-auto mb-6"
             >
-              <motion.div
-                animate={{ scale: [1, 1.15, 1] }}
-                transition={{ duration: 0.5 }}
-                className="w-24 h-24 rounded-full bg-green-500/20 border border-green-500/40 flex items-center justify-center mx-auto mb-6"
-              >
-                <CheckCircle size={44} className="text-green-400" />
-              </motion.div>
-              <h2 className="font-syne text-2xl font-black text-white mb-2">Request Broadcast!</h2>
-              <p className="text-white/50 mb-2">Notifying <strong className="text-white">47 nearby donors</strong> for <strong className="text-blood-400">{form.blood}</strong></p>
-              <p className="text-white/30 text-sm mb-8">Average response time: 6 minutes</p>
-              <div className="flex flex-wrap gap-3 justify-center">
-                <motion.button
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => { setSuccess(false); setForm({ blood: '', units: '1', urgency: 'critical', notes: '', patientName: '', ward: '' }) }}
-                  className="glass border border-white/10 text-white px-6 py-3 rounded-xl text-sm"
-                >
-                  New Request
-                </motion.button>
-                <motion.button
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => navigate('/hospital/tracking')}
-                  className="bg-blood-500 text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-blood-600 transition-colors"
-                >
-                  Track Request
-                </motion.button>
-              </div>
+              <CheckCircle size={44} className="text-green-400" />
             </motion.div>
-          </main>
+            <h2 className="font-syne text-2xl font-black text-white mb-2">Request Broadcast!</h2>
+            <p className="text-white/50 mb-2">
+              Notifying <strong className="text-white">47 nearby donors</strong> for{' '}
+              <strong className="text-blood-400">{form.blood}</strong>
+            </p>
+            <p className="text-white/30 text-sm mb-8">Average response time: 6 minutes</p>
+            <div className="flex flex-wrap gap-3 justify-center">
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={() => { setSuccess(false); setForm({ blood: '', units: '1', urgency: 'critical', notes: '', patientName: '', ward: '' }) }}
+                className="glass border border-white/10 text-white px-6 py-3 rounded-xl text-sm min-h-[44px]"
+              >
+                New Request
+              </motion.button>
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={() => navigate('/hospital/tracking')}
+                className="bg-blood-500 text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-blood-600 transition-colors min-h-[44px]"
+              >
+                Track Request
+              </motion.button>
+            </div>
+          </motion.div>
         </div>
       </PageEnter>
     )
@@ -83,14 +82,12 @@ export default function CreateRequest() {
 
   return (
     <PageEnter>
-      <div className="flex min-h-screen bg-[#0a0a0a] overflow-x-hidden">
-        <Sidebar role="hospital" />
-        <main className="flex-1 p-4 md:p-6 pt-18 md:pt-6">
-          <div className="max-w-xl">
-            <SectionTitle sub="Broadcast to nearby verified donors">Create Blood Request</SectionTitle>
+      <div className="w-full">
+        <div className="max-w-xl">
+          <SectionTitle sub="Broadcast to nearby verified donors">Create Blood Request</SectionTitle>
 
-            <GlassCard className="p-7">
-              <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+          <GlassCard className="p-7">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                 {/* Blood Group */}
                 <div>
                   <label className="text-white/50 text-xs font-medium mb-2 block">BLOOD GROUP NEEDED *</label>
@@ -216,10 +213,9 @@ export default function CreateRequest() {
                 <PrimaryBtn type="submit" loading={loading} disabled={!form.blood} className="w-full py-4 text-base">
                   📡 Broadcast Request to Donors
                 </PrimaryBtn>
-              </form>
-            </GlassCard>
-          </div>
-        </main>
+            </form>
+          </GlassCard>
+        </div>
       </div>
     </PageEnter>
   )

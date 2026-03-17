@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -19,8 +19,11 @@ const navGroups = {
   ],
   hospital: [
     { icon: LayoutDashboard, label: 'Dashboard', to: '/hospital/dashboard' },
+    { icon: ClipboardList, label: 'Requests', to: '/hospital/requests' },
+    { icon: History, label: 'History', to: '/hospital/history' },
+    { icon: User, label: 'Profile', to: '/hospital/profile' },
     { icon: PlusCircle, label: 'Create Request', to: '/hospital/create-request' },
-    { icon: ClipboardList, label: 'Track Requests', to: '/hospital/tracking' },
+    { icon: Activity, label: 'Track Requests', to: '/hospital/tracking' },
   ],
   admin: [
     { icon: LayoutDashboard, label: 'Dashboard', to: '/admin/dashboard' },
@@ -36,6 +39,21 @@ export default function Sidebar({ role = 'donor' }) {
   const navigate = useNavigate()
   const { logout } = useAuth()
   const items = navGroups[role] || navGroups.donor
+
+  // Close the drawer on route changes (prevents "auto-open" feeling)
+  useEffect(() => {
+    setMobileOpen(false)
+  }, [location.pathname])
+
+  // Prevent background scroll while the drawer is open
+  useEffect(() => {
+    if (!mobileOpen) return
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = prevOverflow
+    }
+  }, [mobileOpen])
 
   const handleLogout = async () => {
     await logout()
@@ -56,8 +74,8 @@ export default function Sidebar({ role = 'donor' }) {
         </Link>
         <motion.button
           whileTap={{ scale: 0.9 }}
-          onClick={() => setMobileOpen(!mobileOpen)}
-          className="text-white/70 p-1"
+          onClick={() => (mobileOpen ? setMobileOpen(false) : setMobileOpen(true))}
+          className="text-white/70 p-2 -mr-2 min-h-[44px] min-w-[44px] inline-flex items-center justify-center"
         >
           {mobileOpen ? <X size={22} /> : <Menu size={22} />}
         </motion.button>
@@ -82,13 +100,22 @@ export default function Sidebar({ role = 'donor' }) {
               className="md:hidden fixed top-0 left-0 bottom-0 w-[260px] glass border-r border-white/10 z-50 flex flex-col overflow-y-auto"
             >
               {/* Logo */}
-              <div className="flex items-center gap-3 px-4 py-5 border-b border-white/5">
+              <div className="flex items-center gap-3 px-4 py-4 border-b border-white/5">
                 <div className="w-9 h-9 rounded-xl bg-blood-500 flex items-center justify-center shrink-0 glow-red-sm">
                   <LogoMark className="w-6 h-6" />
                 </div>
                 <span className="font-syne font-extrabold text-xl tracking-tight text-white whitespace-nowrap drop-shadow-[0_2px_10px_rgba(0,0,0,0.45)]">
                   Rudhir<span className="text-blood-500">Setu</span>
                 </span>
+                <motion.button
+                  type="button"
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => setMobileOpen(false)}
+                  className="ml-auto text-white/60 hover:text-white min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-xl glass border border-white/10"
+                  aria-label="Close menu"
+                >
+                  <X size={18} />
+                </motion.button>
               </div>
 
               {/* Nav */}

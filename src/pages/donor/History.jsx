@@ -1,14 +1,18 @@
 import { motion } from 'framer-motion'
 import { CheckCircle, Droplets, MapPin, Calendar } from 'lucide-react'
+import { Navigate, useLocation } from 'react-router-dom'
 import Sidebar from '../../components/Sidebar'
 import { PageEnter, GlassCard, SectionTitle, BloodBadge } from '../../components/UI'
 import { useAuth } from '../../contexts/AuthContext'
+import FullScreenLoader from '../../components/FullScreenLoader'
 
 export default function DonorHistory() {
   const { user, loading: authLoading } = useAuth()
+  const location = useLocation()
 
-  if (authLoading) return null
-  if (!user) return null
+  // Never render a blank screen on auth transitions.
+  if (authLoading) return <FullScreenLoader label="Loading history…" />
+  if (!user) return <Navigate to="/login" state={{ from: location }} replace />
 
   const history = []
 
@@ -16,7 +20,7 @@ export default function DonorHistory() {
     <PageEnter>
       <div className="flex min-h-screen bg-[#0a0a0a]">
         <Sidebar role="donor" />
-        <main className="flex-1 p-4 md:p-6 pt-18 md:pt-6">
+        <main className="flex-1 p-4 md:p-6 pt-16 md:pt-6">
           <div className="max-w-2xl">
             <SectionTitle sub={history.length ? `${history.length} donations` : 'No donations yet'}>Donation History</SectionTitle>
 

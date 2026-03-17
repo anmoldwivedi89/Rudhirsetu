@@ -71,12 +71,12 @@ export default function DonorDashboard() {
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setModalOpen(true)}
-                className="bg-blood-500/20 border border-blood-500/30 text-blood-400 text-sm px-4 py-2 rounded-xl hover:bg-blood-500/30 transition-all"
+                className="bg-blood-500/20 border border-blood-500/30 text-blood-400 text-sm px-4 py-2 rounded-xl hover:bg-blood-500/30 transition-all min-h-[44px]"
               >
                 🚨 Emergency
               </motion.button>
               <div className="relative">
-                <div className="w-9 h-9 rounded-xl glass border border-white/10 flex items-center justify-center text-white/60 cursor-pointer hover:text-white transition-colors">
+                <div className="w-11 h-11 rounded-xl glass border border-white/10 flex items-center justify-center text-white/60 cursor-pointer hover:text-white transition-colors">
                   <Bell size={16} />
                 </div>
                 <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-blood-500 text-white text-[9px] flex items-center justify-center font-bold">
@@ -86,7 +86,7 @@ export default function DonorDashboard() {
             </div>
           </div>
 
-          <div className="p-4 md:p-6 max-w-6xl">
+          <div className="mx-auto w-full max-w-md sm:max-w-lg lg:max-w-xl xl:max-w-6xl px-4 md:px-6 py-4 md:py-6">
             {/* Profile Card */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -127,7 +127,7 @@ export default function DonorDashboard() {
             </motion.div>
 
             {/* Stats Row */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               <StatCard icon={Droplets} label="Total Donations" value="8" sub="+1 this month" color="red" />
               <StatCard icon={Heart} label="Lives Saved" value="8" sub="Est. impact" color="red" />
               <StatCard icon={Clock} label="Days Till Eligible" value="42" sub="Next: May 14" color="blue" />

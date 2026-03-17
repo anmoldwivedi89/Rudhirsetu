@@ -1,20 +1,20 @@
 import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Camera, Edit2, Save, MapPin, Phone, Calendar, Droplets } from 'lucide-react'
+import { Navigate, useLocation } from 'react-router-dom'
 import Sidebar from '../../components/Sidebar'
 import { PageEnter, BloodBadge, GlassCard, PrimaryBtn, SectionTitle } from '../../components/UI'
 import { useAuth } from '../../contexts/AuthContext'
 import { updateUserProfile } from '../../lib/firestoreUsers'
+import FullScreenLoader from '../../components/FullScreenLoader'
 
 export default function DonorProfile() {
   const [editing, setEditing] = useState(false)
   const { user, profile, loading: authLoading } = useAuth()
+  const location = useLocation()
   const [saving, setSaving] = useState(false)
   const [form, setForm] = useState({ name: '', bloodGroup: '', phone: '', location: '', dob: '', weight: '' })
   const [medical, setMedical] = useState({ diabetes: null, alcohol: null, smoking: null })
-
-  if (authLoading) return null
-  if (!user) return null
 
   useEffect(() => {
     if (!profile) return
@@ -39,6 +39,10 @@ export default function DonorProfile() {
     const parts = name.split(/\s+/).filter(Boolean)
     return parts.slice(0, 2).map(p => p[0].toUpperCase()).join('')
   }, [form.name, profile?.name])
+
+  // Never render a blank screen on auth transitions.
+  if (authLoading) return <FullScreenLoader label="Loading your profile…" />
+  if (!user) return <Navigate to="/login" state={{ from: location }} replace />
 
   const handleSave = async () => {
     if (!user) return
@@ -67,13 +71,13 @@ export default function DonorProfile() {
     <PageEnter>
       <div className="flex min-h-screen bg-[#0a0a0a]">
         <Sidebar role="donor" />
-        <main className="flex-1 p-4 md:p-6 pt-18 md:pt-6">
-          <div className="max-w-2xl">
+        <main className="flex-1 pt-14 md:pt-0">
+          <div className="mx-auto w-full max-w-md sm:max-w-lg lg:max-w-xl xl:max-w-4xl px-4 md:px-6 py-4 md:py-6">
             <SectionTitle sub="Manage your donor profile">My Profile</SectionTitle>
 
-            <GlassCard className="p-8 mb-4">
+            <GlassCard className="p-5 sm:p-8 mb-4">
               {/* Avatar */}
-              <div className="flex items-center gap-6 mb-8">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-5 mb-6">
                 <div className="relative">
                   <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-blood-500 to-blood-700 flex items-center justify-center font-syne font-black text-3xl text-white">
                     {initials}
@@ -92,13 +96,13 @@ export default function DonorProfile() {
                 <motion.button
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setEditing(!editing)}
-                  className="ml-auto glass text-white/60 hover:text-white px-4 py-2 rounded-xl text-sm flex items-center gap-2 transition-colors"
+                  className="sm:ml-auto glass text-white/60 hover:text-white px-4 py-2 rounded-xl text-sm flex items-center gap-2 transition-colors min-h-[44px]"
                 >
                   <Edit2 size={14} /> {editing ? 'Cancel' : 'Edit'}
                 </motion.button>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {[
                   { key: 'name', label: 'Full Name', value: form.name, icon: null, placeholder: 'Your name' },
                   { key: 'bloodGroup', label: 'Blood Group', value: form.bloodGroup, icon: null, placeholder: 'e.g. B+' },
@@ -114,7 +118,7 @@ export default function DonorProfile() {
                         value={field.value}
                         onChange={(e) => setForm(prev => ({ ...prev, [field.key]: e.target.value }))}
                         placeholder={field.placeholder}
-                        className="w-full bg-white/5 border border-white/10 focus:border-blood-500/50 rounded-xl px-3 py-2.5 text-white text-sm outline-none transition-colors placeholder:text-white/20"
+                        className="w-full min-h-[44px] bg-white/5 border border-white/10 focus:border-blood-500/50 rounded-xl px-3 py-2.5 text-white text-sm outline-none transition-colors placeholder:text-white/20"
                       />
                     ) : (
                       <p className="text-white text-sm py-2.5">{field.value || '—'}</p>

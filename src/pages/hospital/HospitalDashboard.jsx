@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { PlusCircle, Users, CheckCircle, Clock, Activity, TrendingUp, Droplets, Bell } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import Sidebar from '../../components/Sidebar'
 import EmergencyModal from '../../components/EmergencyModal'
 import { PageEnter, GlassCard, StatCard, SectionTitle, BloodBadge, UrgencyTag } from '../../components/UI'
 import { useAuth } from '../../contexts/AuthContext'
@@ -94,60 +93,58 @@ export default function HospitalDashboard() {
 
   return (
     <PageEnter>
-      <div className="flex min-h-screen bg-[#0a0a0a] overflow-x-hidden">
-        <Sidebar role="hospital" />
-        <main className="flex-1 overflow-auto pt-14 md:pt-0">
-          {/* Top Bar */}
-          <div className="sticky top-0 z-30 glass border-b border-white/5 px-4 md:px-6 py-4 flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <h1 className="font-syne font-bold text-white text-xl">Hospital Command Center</h1>
-              <p className="text-white/40 text-xs">
-                {profile?.name || 'Hospital'}{profile?.location ? ` · ${profile.location}` : ''}
-              </p>
-            </div>
-            <div className="flex items-center gap-2 md:gap-3 flex-wrap">
-              <Link to="/hospital/create-request">
-                <motion.button
-                  whileHover={{ boxShadow: '0 0 20px rgba(239,68,68,0.4)' }}
-                  whileTap={{ scale: 0.97 }}
-                  className="flex items-center gap-2 bg-blood-500 text-white font-medium px-4 py-2 rounded-xl text-sm hover:bg-blood-600 transition-colors"
-                >
-                  <PlusCircle size={16} /> New Request
-                </motion.button>
-              </Link>
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setModalOpen(true)}
-                className="glass-red border border-blood-500/30 text-blood-400 text-sm px-4 py-2 rounded-xl"
-              >
-                🚨 Emergency
-              </motion.button>
-            </div>
+      <div className="w-full">
+        {/* Top Bar */}
+        <div className="sticky top-0 z-30 glass border-b border-white/5 px-4 md:px-6 py-4 flex flex-wrap items-center justify-between gap-3 -mx-4 md:-mx-6">
+          <div className="px-0 md:px-0">
+            <h1 className="font-syne font-bold text-white text-xl">Hospital Command Center</h1>
+            <p className="text-white/40 text-xs">
+              {profile?.name || 'Hospital'}{profile?.location ? ` · ${profile.location}` : ''}
+            </p>
           </div>
+          <div className="flex items-center gap-2 md:gap-3 flex-wrap">
+            <Link to="/hospital/create-request">
+              <motion.button
+                whileHover={{ boxShadow: '0 0 20px rgba(239,68,68,0.4)' }}
+                whileTap={{ scale: 0.97 }}
+                className="flex items-center gap-2 bg-blood-500 text-white font-medium px-4 py-2 rounded-xl text-sm hover:bg-blood-600 transition-colors min-h-[44px]"
+              >
+                <PlusCircle size={16} /> New Request
+              </motion.button>
+            </Link>
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setModalOpen(true)}
+              className="glass-red border border-blood-500/30 text-blood-400 text-sm px-4 py-2 rounded-xl min-h-[44px]"
+            >
+              🚨 Emergency
+            </motion.button>
+          </div>
+        </div>
 
-          <div className="p-4 md:p-6 max-w-6xl">
-            {/* Hospital Profile */}
-            <GlassCard className="p-5 mb-6 border border-white/10">
-              <div className="flex items-start justify-between gap-4 flex-wrap">
-                <div>
-                  <p className="text-white/40 text-xs mb-1">HOSPITAL</p>
-                  <h2 className="font-syne font-black text-white text-xl">
-                    {profile?.name || 'Your Hospital'}
-                  </h2>
-                  <p className="text-white/50 text-sm mt-1">
-                    {profile?.location || 'Add hospital address/location in profile'}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  {(profile?.availableBloodGroups || []).slice(0, 6).map(bg => (
-                    <BloodBadge key={bg} type={bg} size="sm" />
-                  ))}
-                  {!profile?.availableBloodGroups && (
-                    <span className="text-white/30 text-xs">Set available blood groups in profile</span>
-                  )}
-                </div>
+        <div className="pt-4">
+          {/* Hospital Profile */}
+          <GlassCard className="p-5 mb-6 border border-white/10">
+            <div className="flex items-start justify-between gap-4 flex-wrap">
+              <div>
+                <p className="text-white/40 text-xs mb-1">HOSPITAL</p>
+                <h2 className="font-syne font-black text-white text-xl">
+                  {profile?.name || 'Your Hospital'}
+                </h2>
+                <p className="text-white/50 text-sm mt-1">
+                  {profile?.location || 'Add hospital address/location in profile'}
+                </p>
               </div>
-            </GlassCard>
+              <div className="flex items-center gap-2">
+                {(profile?.availableBloodGroups || []).slice(0, 6).map(bg => (
+                  <BloodBadge key={bg} type={bg} size="sm" />
+                ))}
+                {!profile?.availableBloodGroups && (
+                  <span className="text-white/30 text-xs">Set available blood groups in profile</span>
+                )}
+              </div>
+            </div>
+          </GlassCard>
 
             {/* Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -349,7 +346,6 @@ export default function HospitalDashboard() {
               </GlassCard>
             </div>
           </div>
-        </main>
       </div>
       <EmergencyModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
     </PageEnter>

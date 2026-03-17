@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { CheckCircle, Clock, Radio, Droplets } from 'lucide-react'
-import Sidebar from '../../components/Sidebar'
 import { PageEnter, SectionTitle, GlassCard, BloodBadge, UrgencyTag } from '../../components/UI'
 
 const requests = [
@@ -20,21 +19,19 @@ const stages = [
 export default function RequestTracking() {
   return (
     <PageEnter>
-      <div className="flex min-h-screen bg-[#0a0a0a] overflow-x-hidden">
-        <Sidebar role="hospital" />
-        <main className="flex-1 p-4 md:p-6 pt-18 md:pt-6">
-          <div className="max-w-3xl">
-            <SectionTitle sub="Live status of all blood requests">Request Tracker</SectionTitle>
+      <div className="w-full">
+        <div className="max-w-3xl">
+          <SectionTitle sub="Live status of all blood requests">Request Tracker</SectionTitle>
 
-            <div className="flex flex-col gap-5">
-              {requests.map((req, i) => (
-                <motion.div
-                  key={req.id}
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.1 }}
-                  className="glass rounded-2xl p-6 border border-white/5"
-                >
+          <div className="flex flex-col gap-5">
+            {requests.map((req, i) => (
+              <motion.div
+                key={req.id}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+                className="glass rounded-2xl p-6 border border-white/5"
+              >
                   {/* Header */}
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
@@ -99,10 +96,9 @@ export default function RequestTracking() {
                     </div>
                   )}
                 </motion.div>
-              ))}
-            </div>
+            ))}
           </div>
-        </main>
+        </div>
       </div>
     </PageEnter>
   )

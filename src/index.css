@@ -77,6 +77,21 @@
 }
 
 @layer utilities {
+  .app-shell {
+    width: 100%;
+    max-width: 28rem; /* ~max-w-md */
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem; /* px-4 */
+    padding-right: 1rem;
+  }
+  @media (min-width: 640px) {
+    .app-shell { max-width: 32rem; } /* ~sm:max-w-lg */
+  }
+  @media (min-width: 1024px) {
+    .app-shell { max-width: 36rem; } /* ~lg:max-w-xl */
+  }
+
   .card {
     background: #ffffff;
     border-radius: 20px;

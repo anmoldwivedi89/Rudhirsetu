@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Clock, HeartHandshake, MapPin, MessageCircle, Phone, Plus, Users, Waves } from 'lucide-react'
 import Navbar from '../components/Navbar'
@@ -30,6 +30,7 @@ export default function Community() {
   const [loading, setLoading] = useState(true)
   const [pos, setPos] = useState(null)
   const formRef = useRef(null)
+  const [detail, setDetail] = useState(null)
 
   const [creating, setCreating] = useState(false)
   const [err, setErr] = useState('')
@@ -55,7 +56,7 @@ export default function Community() {
     return () => navigator.geolocation.clearWatch(id)
   }, [])
 
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     setLoading(true)
     try {
       const type = tab === 'donors' ? 'donor_offer' : 'patient_request'
@@ -64,12 +65,11 @@ export default function Community() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [tab, selectedGroup])
 
   useEffect(() => {
     refresh()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, selectedGroup])
+  }, [refresh])
 
   const rows = useMemo(() => {
     return posts
@@ -101,8 +101,6 @@ export default function Community() {
       { enableHighAccuracy: true, timeout: 10000 },
     )
   }
-
-  const [detail, setDetail] = useState(null)
 
   const createPost = async () => {
     if (!user?.uid) return

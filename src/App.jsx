@@ -21,65 +21,80 @@ import ProtectedRoute, { RequireAuth, RequireRole } from './components/Protected
 import { ROLES } from './lib/roles'
 import RoleRedirect from './components/RoleRedirect'
 import BottomNav from './components/BottomNav'
+import ErrorBoundary from './components/ErrorBoundary'
+import HospitalLayout from './pages/hospital/HospitalLayout'
+import HospitalRequests from './pages/hospital/Requests'
+import HospitalHistory from './pages/hospital/History'
+import HospitalProfile from './pages/hospital/Profile'
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <div className="pb-24 md:pb-0">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={<RoleRedirect fallback="/login" />} />
-          <Route path="/find-blood" element={<FindBlood />} />
-          <Route path="/community" element={<RequireAuth><Community /></RequireAuth>} />
-          <Route path="/about" element={<About />} />
-          <Route path="/developers" element={<Developers />} />
-          {/* Donor */}
-          <Route path="/donor/dashboard" element={
-            <RequireAuth><RequireRole allow={[ROLES.donor]}><DonorDashboard /></RequireRole></RequireAuth>
-          } />
-          <Route path="/donor/profile" element={
-            <ProtectedRoute><RequireRole allow={[ROLES.donor]}><DonorProfile /></RequireRole></ProtectedRoute>
-          } />
-          <Route path="/donor/requests" element={
-            <ProtectedRoute><RequireRole allow={[ROLES.donor]}><DonorRequests /></RequireRole></ProtectedRoute>
-          } />
-          <Route path="/donor/history" element={
-            <ProtectedRoute><RequireRole allow={[ROLES.donor]}><DonorHistory /></RequireRole></ProtectedRoute>
-          } />
+    <ErrorBoundary>
+      <BrowserRouter>
+        <div className="pb-28 md:pb-0">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/dashboard" element={<RoleRedirect fallback="/login" />} />
+            <Route path="/find-blood" element={<FindBlood />} />
+            <Route path="/community" element={<RequireAuth><Community /></RequireAuth>} />
+            <Route path="/about" element={<About />} />
+            <Route path="/developers" element={<Developers />} />
+            {/* Donor */}
+            <Route path="/donor/dashboard" element={
+              <RequireAuth><RequireRole allow={[ROLES.donor]}><DonorDashboard /></RequireRole></RequireAuth>
+            } />
+            <Route path="/donor/profile" element={
+              <ProtectedRoute><RequireRole allow={[ROLES.donor]}><DonorProfile /></RequireRole></ProtectedRoute>
+            } />
+            <Route path="/donor/requests" element={
+              <ProtectedRoute><RequireRole allow={[ROLES.donor]}><DonorRequests /></RequireRole></ProtectedRoute>
+            } />
+            <Route path="/donor/history" element={
+              <ProtectedRoute><RequireRole allow={[ROLES.donor]}><DonorHistory /></RequireRole></ProtectedRoute>
+            } />
 
-          {/* Hospital */}
-          <Route path="/hospital/dashboard" element={
-            <RequireAuth><RequireRole allow={[ROLES.hospital]}><HospitalDashboard /></RequireRole></RequireAuth>
-          } />
-          <Route path="/hospital/create-request" element={
-            <RequireAuth><RequireRole allow={[ROLES.hospital]}><CreateRequest /></RequireRole></RequireAuth>
-          } />
-          <Route path="/hospital/tracking" element={
-            <RequireAuth><RequireRole allow={[ROLES.hospital]}><RequestTracking /></RequireRole></RequireAuth>
-          } />
+            {/* Hospital */}
+            <Route
+              path="/hospital"
+              element={
+                <RequireAuth>
+                  <RequireRole allow={[ROLES.hospital]}>
+                    <HospitalLayout />
+                  </RequireRole>
+                </RequireAuth>
+              }
+            >
+              <Route path="dashboard" element={<HospitalDashboard />} />
+              <Route path="requests" element={<HospitalRequests />} />
+              <Route path="history" element={<HospitalHistory />} />
+              <Route path="profile" element={<HospitalProfile />} />
+              <Route path="create-request" element={<CreateRequest />} />
+              <Route path="tracking" element={<RequestTracking />} />
+            </Route>
 
-          {/* Patient */}
-          <Route path="/patient/dashboard" element={
-            <RequireAuth><RequireRole allow={[ROLES.patient]}><PatientDashboard /></RequireRole></RequireAuth>
-          } />
+            {/* Patient */}
+            <Route path="/patient/dashboard" element={
+              <RequireAuth><RequireRole allow={[ROLES.patient]}><PatientDashboard /></RequireRole></RequireAuth>
+            } />
 
-          {/* Admin (optional) */}
-          <Route path="/admin/dashboard" element={
-            <RequireAuth><RequireRole allow={[ROLES.admin]}><AdminDashboard /></RequireRole></RequireAuth>
-          } />
-          <Route path="/admin/users" element={
-            <RequireAuth><RequireRole allow={[ROLES.admin]}><UserManagement /></RequireRole></RequireAuth>
-          } />
-          <Route path="/admin/developer" element={
-            <RequireAuth><RequireRole allow={[ROLES.admin]}><DeveloperProfile /></RequireRole></RequireAuth>
-          } />
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-      </div>
+            {/* Admin (optional) */}
+            <Route path="/admin/dashboard" element={
+              <RequireAuth><RequireRole allow={[ROLES.admin]}><AdminDashboard /></RequireRole></RequireAuth>
+            } />
+            <Route path="/admin/users" element={
+              <RequireAuth><RequireRole allow={[ROLES.admin]}><UserManagement /></RequireRole></RequireAuth>
+            } />
+            <Route path="/admin/developer" element={
+              <RequireAuth><RequireRole allow={[ROLES.admin]}><DeveloperProfile /></RequireRole></RequireAuth>
+            } />
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </div>
 
-      <BottomNav />
-    </BrowserRouter>
+        <BottomNav />
+      </BrowserRouter>
+    </ErrorBoundary>
   )
 }

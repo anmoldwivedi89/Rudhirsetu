@@ -26,7 +26,7 @@ export default function UserManagement() {
     <PageEnter>
       <div className="flex min-h-screen bg-[#0a0a0a]">
         <Sidebar role="admin" />
-        <main className="flex-1 p-4 md:p-6 pt-18 md:pt-6">
+        <main className="flex-1 p-4 md:p-6 pt-16 md:pt-6">
           <SectionTitle sub={`${users.length} total registered users`}>User Management</SectionTitle>
 
           {/* Controls */}
