@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
-import { onAuthStateChanged } from 'firebase/auth'
+import { onAuthStateChanged, signOut } from 'firebase/auth'
 import { doc, getDoc } from 'firebase/firestore'
 import { auth, db } from '../firebase'
 import { getCachedUserRole } from '../lib/roles'
@@ -13,6 +13,7 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
+      console.log('[auth] state change:', u ? u.uid : null)
       setUser(u)
       setProfile(null)
       if (!u) {
@@ -37,11 +38,25 @@ export function AuthProvider({ children }) {
     return () => unsub()
   }, [])
 
+  const logout = async () => {
+    console.log('[auth] logout: start')
+    try {
+      await signOut(auth)
+      console.log('User logged out')
+    } finally {
+      // Ensure UI clears immediately even if signOut throws in edge cases.
+      setUser(null)
+      setProfile(null)
+      setLoading(false)
+    }
+  }
+
   const value = useMemo(() => ({
     user,
     profile,
     role: profile?.role || null,
     loading,
+    logout,
   }), [user, profile, loading])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

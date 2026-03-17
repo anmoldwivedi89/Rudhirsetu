@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard, User, Bell, History,
@@ -8,6 +8,7 @@ import {
   Code, Activity, Menu, X
 } from 'lucide-react'
 import LogoMark from './LogoMark'
+import { useAuth } from '../contexts/AuthContext'
 
 const navGroups = {
   donor: [
@@ -32,7 +33,14 @@ export default function Sidebar({ role = 'donor' }) {
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const location = useLocation()
+  const navigate = useNavigate()
+  const { logout } = useAuth()
   const items = navGroups[role] || navGroups.donor
+
+  const handleLogout = async () => {
+    await logout()
+    navigate('/login', { replace: true })
+  }
 
   return (
     <>
@@ -113,14 +121,17 @@ export default function Sidebar({ role = 'donor' }) {
 
               {/* Footer */}
               <div className="px-2 py-4 border-t border-white/5">
-                <Link to="/" onClick={() => setMobileOpen(false)}>
-                  <motion.div
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-white/40 hover:text-red-400 hover:bg-red-500/10 transition-all cursor-pointer"
-                  >
-                    <LogOut size={18} className="shrink-0" />
-                    <span className="text-sm">Sign Out</span>
-                  </motion.div>
-                </Link>
+                <motion.button
+                  type="button"
+                  onClick={async () => {
+                    setMobileOpen(false)
+                    await handleLogout()
+                  }}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-white/40 hover:text-red-400 hover:bg-red-500/10 transition-all cursor-pointer text-left"
+                >
+                  <LogOut size={18} className="shrink-0" />
+                  <span className="text-sm">Sign Out</span>
+                </motion.button>
               </div>
             </motion.div>
           </>
@@ -194,26 +205,26 @@ export default function Sidebar({ role = 'donor' }) {
 
         {/* Footer */}
         <div className="px-2 py-4 border-t border-white/5 flex flex-col gap-1">
-          <Link to="/">
-            <motion.div
-              whileHover={{ x: 3 }}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-white/40 hover:text-red-400 hover:bg-red-500/10 transition-all cursor-pointer"
-            >
-              <LogOut size={18} className="shrink-0" />
-              <AnimatePresence>
-                {!collapsed && (
-                  <motion.span
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="text-sm whitespace-nowrap"
-                  >
-                    Sign Out
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          </Link>
+          <motion.button
+            type="button"
+            whileHover={{ x: 3 }}
+            onClick={handleLogout}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-white/40 hover:text-red-400 hover:bg-red-500/10 transition-all cursor-pointer text-left"
+          >
+            <LogOut size={18} className="shrink-0" />
+            <AnimatePresence>
+              {!collapsed && (
+                <motion.span
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="text-sm whitespace-nowrap"
+                >
+                  Sign Out
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </motion.button>
 
           {/* Collapse Toggle */}
           <motion.button

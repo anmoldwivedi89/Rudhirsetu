@@ -6,10 +6,13 @@ import { useAuth } from '../../contexts/AuthContext'
 import { acceptRequest, listOpenRequestsForDonor } from '../../lib/firestoreRequests'
 
 export default function DonorRequests() {
-  const { user, profile } = useAuth()
+  const { user, profile, loading: authLoading } = useAuth()
   const [requests, setRequests] = useState([])
   const [accepted, setAccepted] = useState([])
   const [loading, setLoading] = useState(true)
+
+  if (authLoading) return null
+  if (!user) return null
 
   const donorBloodGroup = profile?.bloodGroup || null
   const fetchKey = useMemo(() => donorBloodGroup || 'all', [donorBloodGroup])

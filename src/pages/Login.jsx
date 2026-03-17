@@ -24,6 +24,7 @@ export default function Login() {
     setError('')
     try {
       const cred = await signInWithEmailAndPassword(auth, email, password)
+      console.log('[auth] login success:', cred.user?.uid || null)
       const userRef = doc(db, 'users', cred.user.uid)
       const snap = await getDoc(userRef)
       const storedRole = snap.exists() ? snap.data()?.role : null
@@ -42,6 +43,7 @@ export default function Login() {
       cacheUserRole(cred.user.uid, finalRole)
       navigate(getDashboardPath(finalRole), { replace: true })
     } catch (err) {
+      console.log('[auth] login failed:', err?.code || err?.message || err)
       setError(err.message)
     } finally {
       setLoading(false)

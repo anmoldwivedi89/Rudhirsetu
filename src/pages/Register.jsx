@@ -64,6 +64,7 @@ export default function Register() {
     setError('')
     try {
       const cred = await createUserWithEmailAndPassword(auth, email, password)
+      console.log('[auth] register success:', cred.user?.uid || null)
 
       const safeRole = role === 'hospital'
         ? ROLES.hospital
@@ -92,6 +93,7 @@ export default function Register() {
       cacheUserRole(cred.user.uid, safeRole)
       navigate(getDashboardPath(safeRole), { replace: true })
     } catch (err) {
+      console.log('[auth] register failed:', err?.code || err?.message || err)
       setError(err.message)
     } finally {
       setLoading(false)

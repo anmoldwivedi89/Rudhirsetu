@@ -2,23 +2,23 @@ import { motion } from 'framer-motion'
 import { CheckCircle, Droplets, MapPin, Calendar } from 'lucide-react'
 import Sidebar from '../../components/Sidebar'
 import { PageEnter, GlassCard, SectionTitle, BloodBadge } from '../../components/UI'
-
-const history = [
-  { id: 1, date: 'Feb 14, 2025', hospital: 'Apollo Mumbai', blood: 'B+', units: 1, status: 'completed', impact: 'Saved 1 life' },
-  { id: 2, date: 'Nov 10, 2024', hospital: 'AIIMS Delhi', blood: 'B+', units: 1, status: 'completed', impact: 'Saved 1 life' },
-  { id: 3, date: 'Aug 02, 2024', hospital: 'Fortis Hospital', blood: 'B+', units: 1, status: 'completed', impact: 'Saved 1 life' },
-  { id: 4, date: 'Apr 18, 2024', hospital: 'City Hospital', blood: 'B+', units: 1, status: 'completed', impact: 'Saved 1 life' },
-  { id: 5, date: 'Jan 05, 2024', hospital: 'Max Healthcare', blood: 'B+', units: 1, status: 'completed', impact: 'Saved 1 life' },
-]
+import { useAuth } from '../../contexts/AuthContext'
 
 export default function DonorHistory() {
+  const { user, loading: authLoading } = useAuth()
+
+  if (authLoading) return null
+  if (!user) return null
+
+  const history = []
+
   return (
     <PageEnter>
       <div className="flex min-h-screen bg-[#0a0a0a]">
         <Sidebar role="donor" />
         <main className="flex-1 p-4 md:p-6 pt-18 md:pt-6">
           <div className="max-w-2xl">
-            <SectionTitle sub={`${history.length} donations · ${history.length} lives saved`}>Donation History</SectionTitle>
+            <SectionTitle sub={history.length ? `${history.length} donations` : 'No donations yet'}>Donation History</SectionTitle>
 
             {/* Timeline */}
             <div className="relative">
@@ -26,6 +26,12 @@ export default function DonorHistory() {
               <div className="absolute left-6 top-0 bottom-0 w-px bg-gradient-to-b from-blood-500 to-transparent" />
 
               <div className="flex flex-col gap-4 pl-16">
+                {history.length === 0 && (
+                  <GlassCard className="p-8 text-center">
+                    <p className="text-white/60">No donation history yet.</p>
+                    <p className="text-white/30 text-sm mt-1">Your completed donations will appear here after you donate.</p>
+                  </GlassCard>
+                )}
                 {history.map((item, i) => (
                   <motion.div
                     key={item.id}

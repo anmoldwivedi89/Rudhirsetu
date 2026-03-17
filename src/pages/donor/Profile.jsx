@@ -8,10 +8,13 @@ import { updateUserProfile } from '../../lib/firestoreUsers'
 
 export default function DonorProfile() {
   const [editing, setEditing] = useState(false)
-  const { user, profile } = useAuth()
+  const { user, profile, loading: authLoading } = useAuth()
   const [saving, setSaving] = useState(false)
   const [form, setForm] = useState({ name: '', bloodGroup: '', phone: '', location: '', dob: '', weight: '' })
   const [medical, setMedical] = useState({ diabetes: null, alcohol: null, smoking: null })
+
+  if (authLoading) return null
+  if (!user) return null
 
   useEffect(() => {
     if (!profile) return

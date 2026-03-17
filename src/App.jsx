@@ -17,7 +17,7 @@ import UserManagement from './pages/admin/UserManagement'
 import DeveloperProfile from './pages/admin/DeveloperProfile'
 import PatientDashboard from './pages/patient/PatientDashboard'
 import Developers from './pages/Developers'
-import { RequireAuth, RequireRole } from './components/ProtectedRoute'
+import ProtectedRoute, { RequireAuth, RequireRole } from './components/ProtectedRoute'
 import { ROLES } from './lib/roles'
 import RoleRedirect from './components/RoleRedirect'
 import BottomNav from './components/BottomNav'
@@ -40,13 +40,13 @@ export default function App() {
             <RequireAuth><RequireRole allow={[ROLES.donor]}><DonorDashboard /></RequireRole></RequireAuth>
           } />
           <Route path="/donor/profile" element={
-            <RequireAuth><RequireRole allow={[ROLES.donor]}><DonorProfile /></RequireRole></RequireAuth>
+            <ProtectedRoute><RequireRole allow={[ROLES.donor]}><DonorProfile /></RequireRole></ProtectedRoute>
           } />
           <Route path="/donor/requests" element={
-            <RequireAuth><RequireRole allow={[ROLES.donor]}><DonorRequests /></RequireRole></RequireAuth>
+            <ProtectedRoute><RequireRole allow={[ROLES.donor]}><DonorRequests /></RequireRole></ProtectedRoute>
           } />
           <Route path="/donor/history" element={
-            <RequireAuth><RequireRole allow={[ROLES.donor]}><DonorHistory /></RequireRole></RequireAuth>
+            <ProtectedRoute><RequireRole allow={[ROLES.donor]}><DonorHistory /></RequireRole></ProtectedRoute>
           } />
 
           {/* Hospital */}

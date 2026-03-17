@@ -3,6 +3,15 @@ import { useAuth } from '../contexts/AuthContext'
 import { getDashboardPath } from '../lib/roles'
 import FullScreenLoader from './FullScreenLoader'
 
+export default function ProtectedRoute({ children }) {
+  const { user, loading } = useAuth()
+  const location = useLocation()
+
+  if (loading) return <FullScreenLoader label="Signing you in…" />
+  if (!user) return <Navigate to="/login" state={{ from: location }} replace />
+  return children
+}
+
 export function RequireAuth({ children }) {
   const { user, loading } = useAuth()
   const location = useLocation()
