@@ -1,20 +1,13 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, MapPin, Phone, MessageCircle, Filter, SlidersHorizontal } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import { PageEnter, BloodBadge, UrgencyTag, GlassCard } from '../components/UI'
 import EmergencyModal from '../components/EmergencyModal'
+import { listHospitals } from '../lib/firestoreUsers'
+import { formatKm, haversineKm } from '../lib/geo'
 
 const bloodGroups = ['All', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
-
-const results = [
-  { id: 1, name: 'Apollo Hospital Mumbai', blood: 'O-', dist: '0.8 km', urgency: 'critical', time: '2 min ago', units: 3, contact: '+91 98765 43210' },
-  { id: 2, name: 'Rahul M. (Donor)', blood: 'B+', dist: '1.4 km', urgency: 'high', time: '8 min ago', units: 1, contact: '+91 87654 32109' },
-  { id: 3, name: 'AIIMS Delhi', blood: 'AB+', dist: '2.1 km', urgency: 'medium', time: '15 min ago', units: 2, contact: '+91 11234 56789' },
-  { id: 4, name: 'Priya S. (Donor)', blood: 'A+', dist: '3.0 km', urgency: 'low', time: '1 hr ago', units: 1, contact: '+91 76543 21098' },
-  { id: 5, name: 'City Hospital', blood: 'O+', dist: '3.8 km', urgency: 'high', time: '2 hr ago', units: 4, contact: '+91 22345 67890' },
-  { id: 6, name: 'Ankit K. (Donor)', blood: 'A-', dist: '4.2 km', urgency: 'medium', time: '3 hr ago', units: 1, contact: '+91 65432 10987' },
-]
 
 // Simple map simulation
 function MapSimulation({ results }) {
@@ -120,11 +113,76 @@ export default function FindBlood() {
   const [selectedGroup, setSelectedGroup] = useState('All')
   const [modalOpen, setModalOpen] = useState(false)
   const [contacted, setContacted] = useState(new Set())
+  const [pos, setPos] = useState(null) // { lat, lng }
+  const [posError, setPosError] = useState('')
+  const [watching, setWatching] = useState(false)
+  const [hospitals, setHospitals] = useState([])
+  const [loadingHospitals, setLoadingHospitals] = useState(true)
 
-  const filtered = results.filter(r =>
-    (selectedGroup === 'All' || r.blood === selectedGroup) &&
-    (search === '' || r.name.toLowerCase().includes(search.toLowerCase()))
-  )
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      setPosError('Geolocation not supported on this device.')
+      return
+    }
+    setWatching(true)
+    const id = navigator.geolocation.watchPosition(
+      (p) => {
+        setPosError('')
+        setPos({ lat: p.coords.latitude, lng: p.coords.longitude })
+      },
+      (err) => {
+        setPosError(err.message || 'Location permission denied.')
+        setWatching(false)
+      },
+      { enableHighAccuracy: true, maximumAge: 2000, timeout: 10000 },
+    )
+    return () => {
+      navigator.geolocation.clearWatch(id)
+      setWatching(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    let active = true
+    setLoadingHospitals(true)
+    ;(async () => {
+      try {
+        const blood = selectedGroup === 'All' ? undefined : selectedGroup
+        const res = await listHospitals({ bloodGroup: blood })
+        if (!active) return
+        setHospitals(res)
+      } finally {
+        if (active) setLoadingHospitals(false)
+      }
+    })()
+    return () => { active = false }
+  }, [selectedGroup])
+
+  const hospitalRows = useMemo(() => {
+    const blood = selectedGroup === 'All' ? null : selectedGroup
+    const filtered = hospitals
+      .filter(h => !blood || (Array.isArray(h.availableBloodGroups) ? h.availableBloodGroups.includes(blood) : true))
+      .filter(h => search === '' || (h.name || '').toLowerCase().includes(search.toLowerCase()))
+      .map(h => {
+        const geo = h.geo && typeof h.geo.lat === 'number' && typeof h.geo.lng === 'number'
+          ? { lat: h.geo.lat, lng: h.geo.lng }
+          : null
+        const km = pos && geo ? haversineKm(pos, geo) : null
+        return {
+          id: h.id,
+          name: h.name || 'Unnamed Hospital',
+          blood: blood || (Array.isArray(h.availableBloodGroups) ? h.availableBloodGroups[0] : '—'),
+          contact: h.phone || '—',
+          location: h.location || '—',
+          km,
+        }
+      })
+      .sort((a, b) => (a.km ?? 1e9) - (b.km ?? 1e9))
+
+    return filtered
+  }, [hospitals, selectedGroup, search, pos])
+
+  const nearest = hospitalRows[0] || null
 
   return (
     <PageEnter>
@@ -194,13 +252,28 @@ export default function FindBlood() {
             {/* Results */}
             <div className="lg:col-span-3 flex flex-col gap-3">
               <div className="flex items-center justify-between mb-1">
-                <p className="text-white/40 text-sm">{filtered.length} results found</p>
+                <p className="text-white/40 text-sm">{hospitalRows.length} hospitals found</p>
                 <div className="flex items-center gap-2 text-white/30 text-xs">
-                  <MapPin size={12} /> <span>Mumbai, MH</span>
+                  <MapPin size={12} />
+                  <span>
+                    {pos ? `${pos.lat.toFixed(4)}, ${pos.lng.toFixed(4)}` : (posError || 'Fetching location…')}
+                  </span>
+                  {watching && (
+                    <span className="ml-1 inline-flex items-center gap-1 text-green-400">
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+                      Live
+                    </span>
+                  )}
                 </div>
               </div>
 
-              {filtered.map((r, i) => (
+              {loadingHospitals && (
+                <div className="glass rounded-2xl p-6 border border-white/10 text-white/50">
+                  Loading hospitals…
+                </div>
+              )}
+
+              {!loadingHospitals && hospitalRows.map((r, i) => (
                 <motion.div
                   key={r.id}
                   initial={{ opacity: 0, x: -20 }}
@@ -213,15 +286,15 @@ export default function FindBlood() {
                       <BloodBadge type={r.blood} glow />
                       <div>
                         <p className="text-white font-medium">{r.name}</p>
-                        <p className="text-white/30 text-xs mt-0.5">{r.time} · {r.units} unit{r.units > 1 ? 's' : ''} needed</p>
+                        <p className="text-white/30 text-xs mt-0.5">{r.location}</p>
                       </div>
                     </div>
-                    <UrgencyTag level={r.urgency} />
+                    <UrgencyTag level="medium" />
                   </div>
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                     <div className="flex items-center gap-2 text-white/40 text-sm">
                       <MapPin size={14} className="text-blood-400" />
-                      <span>{r.dist} away</span>
+                      <span>{formatKm(r.km)} away</span>
                     </div>
                     <div className="flex gap-2">
                       <motion.button
@@ -250,13 +323,41 @@ export default function FindBlood() {
 
             {/* Map */}
             <div className="lg:col-span-2">
+              {/* Right side: real location + nearest hospital */}
+              <div className="mb-3 glass rounded-2xl p-4 border border-white/10">
+                <p className="text-white/40 text-xs mb-1">YOUR LOCATION</p>
+                <p className="text-white text-sm">
+                  {pos ? `${pos.lat.toFixed(5)}, ${pos.lng.toFixed(5)}` : (posError || 'Fetching…')}
+                </p>
+                {watching && (
+                  <p className="text-green-400 text-xs mt-1">Live tracking ON</p>
+                )}
+                <div className="h-px bg-white/10 my-3" />
+                <p className="text-white/40 text-xs mb-1">NEAREST HOSPITAL {selectedGroup !== 'All' ? `(${selectedGroup})` : ''}</p>
+                {nearest ? (
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-white font-medium text-sm">{nearest.name}</p>
+                      <p className="text-white/40 text-xs">{nearest.location}</p>
+                      <p className="text-white/40 text-xs mt-0.5">📞 {nearest.contact}</p>
+                    </div>
+                    <div className="text-right">
+                      <BloodBadge type={nearest.blood} size="sm" glow />
+                      <p className="text-white/60 text-xs mt-1">{formatKm(nearest.km)}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-white/40 text-sm">No hospital data yet. Add hospital users with `geo` (lat/lng).</p>
+                )}
+              </div>
+
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.2 }}
                 className="sticky top-24 h-[300px] sm:h-[500px] rounded-2xl overflow-hidden border border-white/10"
               >
-                <MapSimulation results={results} />
+                <MapSimulation results={[]} />
               </motion.div>
             </div>
           </div>

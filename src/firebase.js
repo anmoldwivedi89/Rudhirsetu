@@ -2,6 +2,7 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -16,6 +17,8 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+// Analytics can throw in some environments (e.g. blocked cookies); keep non-fatal.
+try { getAnalytics(app) } catch { /* noop */ }
 export const auth = getAuth(app);
+export const db = getFirestore(app);
 export default app;

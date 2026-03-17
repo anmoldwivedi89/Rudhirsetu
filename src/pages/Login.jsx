@@ -1,10 +1,13 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Droplets, Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react'
+import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react'
 import { PageEnter, PrimaryBtn } from '../components/UI'
-import { auth } from '../firebase'
+import { auth, db } from '../firebase'
 import { signInWithEmailAndPassword } from 'firebase/auth'
+import { doc, getDoc } from 'firebase/firestore'
+import { getDashboardPath } from '../lib/roles'
+import LogoMark from '../components/LogoMark'
 
 export default function Login() {
   const [showPass, setShowPass] = useState(false)
@@ -13,14 +16,17 @@ export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
     setError('')
     try {
-      await signInWithEmailAndPassword(auth, email, password)
-      window.location.href = role === 'donor' ? '/donor/dashboard' : role === 'hospital' ? '/hospital/dashboard' : '/patient/dashboard'
+      const cred = await signInWithEmailAndPassword(auth, email, password)
+      const snap = await getDoc(doc(db, 'users', cred.user.uid))
+      const storedRole = snap.exists() ? snap.data()?.role : null
+      navigate(getDashboardPath(storedRole || role), { replace: true })
     } catch (err) {
       setError(err.message)
     } finally {
@@ -47,7 +53,7 @@ export default function Login() {
           >
             <Link to="/" className="inline-flex items-center gap-2 mb-4">
               <div className="w-10 h-10 rounded-xl bg-blood-500 flex items-center justify-center glow-red-sm">
-                <Droplets size={20} className="text-white" />
+                <LogoMark className="w-7 h-7" />
               </div>
               <span className="font-syne font-black text-2xl">Rudhir<span className="text-blood-500">Setu</span></span>
             </Link>

@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { PlusCircle, Users, CheckCircle, Clock, Activity, TrendingUp, Droplets, Bell } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Sidebar from '../../components/Sidebar'
 import EmergencyModal from '../../components/EmergencyModal'
 import { PageEnter, GlassCard, StatCard, SectionTitle, BloodBadge, UrgencyTag } from '../../components/UI'
+import { useAuth } from '../../contexts/AuthContext'
+import { listDonors } from '../../lib/firestoreUsers'
 
 const activeRequests = [
   { id: 1, blood: 'O-', patient: 'Emergency Surgery', units: 3, urgency: 'critical', donors: 2, stage: 3 },
@@ -38,6 +40,21 @@ function RequestLifecycle({ stage }) {
 
 export default function HospitalDashboard() {
   const [modalOpen, setModalOpen] = useState(false)
+  const { profile } = useAuth()
+  const [donors, setDonors] = useState([])
+
+  useEffect(() => {
+    let active = true
+    ;(async () => {
+      try {
+        const res = await listDonors()
+        if (active) setDonors(res)
+      } catch {
+        // ignore
+      }
+    })()
+    return () => { active = false }
+  }, [])
 
   return (
     <PageEnter>
@@ -71,6 +88,29 @@ export default function HospitalDashboard() {
           </div>
 
           <div className="p-4 md:p-6 max-w-6xl">
+            {/* Hospital Profile */}
+            <GlassCard className="p-5 mb-6 border border-white/10">
+              <div className="flex items-start justify-between gap-4 flex-wrap">
+                <div>
+                  <p className="text-white/40 text-xs mb-1">HOSPITAL</p>
+                  <h2 className="font-syne font-black text-white text-xl">
+                    {profile?.name || 'Your Hospital'}
+                  </h2>
+                  <p className="text-white/50 text-sm mt-1">
+                    {profile?.location || 'Add hospital address/location in profile'}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  {(profile?.availableBloodGroups || []).slice(0, 6).map(bg => (
+                    <BloodBadge key={bg} type={bg} size="sm" />
+                  ))}
+                  {!profile?.availableBloodGroups && (
+                    <span className="text-white/30 text-xs">Set available blood groups in profile</span>
+                  )}
+                </div>
+              </div>
+            </GlassCard>
+
             {/* Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               <StatCard icon={Activity} label="Active Requests" value="3" sub="2 critical" color="red" />
@@ -140,6 +180,31 @@ export default function HospitalDashboard() {
                   </div>
                 </motion.div>
               ))}
+            </div>
+
+            {/* Available Donors */}
+            <div className="mt-10">
+              <SectionTitle sub="From Firebase users collection (role=donor)">Available Donors</SectionTitle>
+              <GlassCard className="p-4 border border-white/10">
+                {donors.length === 0 ? (
+                  <p className="text-white/40 text-sm">No donors found yet. Create a few donor accounts to see them here.</p>
+                ) : (
+                  <div className="grid md:grid-cols-2 gap-3">
+                    {donors.slice(0, 10).map(d => (
+                      <div key={d.id} className="glass rounded-xl p-4 border border-white/10">
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <p className="text-white font-medium text-sm">{d.name || 'Unnamed Donor'}</p>
+                            <p className="text-white/40 text-xs mt-0.5">{d.location || '—'}</p>
+                            <p className="text-white/40 text-xs mt-0.5">{d.phone || '—'}</p>
+                          </div>
+                          <BloodBadge type={d.bloodGroup || '—'} size="sm" glow />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </GlassCard>
             </div>
           </div>
         </main>

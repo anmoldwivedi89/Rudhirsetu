@@ -3,6 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle, AlertTriangle, MapPin } from 'lucide-react'
 import Sidebar from '../../components/Sidebar'
 import { PageEnter, SectionTitle, PrimaryBtn, GlassCard } from '../../components/UI'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../contexts/AuthContext'
+import { createBloodRequest } from '../../lib/firestoreRequests'
 
 const bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
 
@@ -10,14 +13,28 @@ export default function CreateRequest() {
   const [form, setForm] = useState({ blood: '', units: '1', urgency: 'critical', notes: '', patientName: '', ward: '' })
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
+  const navigate = useNavigate()
+  const { user, profile } = useAuth()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!form.blood) return
     setLoading(true)
-    await new Promise(r => setTimeout(r, 1600))
-    setLoading(false)
-    setSuccess(true)
+    try {
+      await createBloodRequest({
+        createdBy: user?.uid,
+        createdByRole: 'hospital',
+        createdByName: profile?.name || null,
+        createdByLocation: profile?.location || null,
+        bloodGroup: form.blood,
+        units: form.units,
+        urgency: form.urgency,
+        notes: [form.patientName, form.ward, form.notes].filter(Boolean).join(' · ') || null,
+      })
+      setSuccess(true)
+    } finally {
+      setLoading(false)
+    }
   }
 
   if (success) {
@@ -51,7 +68,7 @@ export default function CreateRequest() {
                 </motion.button>
                 <motion.button
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => window.location.href = '/hospital/tracking'}
+                  onClick={() => navigate('/hospital/tracking')}
                   className="bg-blood-500 text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-blood-600 transition-colors"
                 >
                   Track Request

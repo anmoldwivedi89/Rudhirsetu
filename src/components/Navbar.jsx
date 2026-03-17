@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Droplets, Menu, X, Bell, ChevronDown } from 'lucide-react'
+import { Menu, X, Bell, ChevronDown } from 'lucide-react'
+import LogoMark from './LogoMark'
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
@@ -35,7 +36,7 @@ export default function Navbar() {
             whileHover={{ scale: 1.1, rotate: 5 }}
             className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-blood-500 flex items-center justify-center glow-red-sm"
           >
-            <Droplets size={18} className="text-white" />
+            <LogoMark className="w-6 h-6" />
           </motion.div>
           <span
             className={`font-syne font-extrabold text-xl sm:text-2xl tracking-tight ${

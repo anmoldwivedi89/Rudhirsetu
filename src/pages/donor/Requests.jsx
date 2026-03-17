@@ -1,19 +1,42 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import Sidebar from '../../components/Sidebar'
 import { PageEnter, RequestCard, GlassCard, SectionTitle, BloodBadge, UrgencyTag } from '../../components/UI'
-
-const allRequests = [
-  { id: 1, bloodType: 'B+', distance: '0.8 km', urgency: 'critical', hospital: 'Apollo Mumbai', time: '2 min ago' },
-  { id: 2, bloodType: 'O-', distance: '1.4 km', urgency: 'high', hospital: 'AIIMS Delhi', time: '8 min ago' },
-  { id: 3, bloodType: 'B+', distance: '2.2 km', urgency: 'medium', hospital: 'Fortis Hospital', time: '20 min ago' },
-  { id: 4, bloodType: 'AB+', distance: '3.0 km', urgency: 'low', hospital: 'City Hospital', time: '1 hr ago' },
-  { id: 5, bloodType: 'A+', distance: '4.5 km', urgency: 'medium', hospital: 'Max Healthcare', time: '2 hr ago' },
-]
+import { useAuth } from '../../contexts/AuthContext'
+import { acceptRequest, listOpenRequestsForDonor } from '../../lib/firestoreRequests'
 
 export default function DonorRequests() {
-  const [requests, setRequests] = useState(allRequests)
+  const { user, profile } = useAuth()
+  const [requests, setRequests] = useState([])
   const [accepted, setAccepted] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  const donorBloodGroup = profile?.bloodGroup || null
+  const fetchKey = useMemo(() => donorBloodGroup || 'all', [donorBloodGroup])
+
+  useEffect(() => {
+    let active = true
+    setLoading(true)
+    ;(async () => {
+      try {
+        const res = await listOpenRequestsForDonor({ bloodGroup: donorBloodGroup || undefined })
+        if (!active) return
+        setRequests(res)
+      } finally {
+        if (active) setLoading(false)
+      }
+    })()
+    return () => { active = false }
+  }, [fetchKey, donorBloodGroup])
+
+  const toCard = (r) => ({
+    id: r.id,
+    bloodType: r.bloodGroup,
+    distance: r.createdByLocation || '—',
+    urgency: r.urgency,
+    hospital: r.createdByName || (r.createdByRole === 'hospital' ? 'Hospital' : 'Patient'),
+    time: 'just now',
+  })
 
   return (
     <PageEnter>
@@ -32,8 +55,13 @@ export default function DonorRequests() {
               {requests.map(req => (
                 <RequestCard
                   key={req.id}
-                  {...req}
-                  onAccept={() => { setAccepted(prev => [...prev, req]); setRequests(p => p.filter(r => r.id !== req.id)) }}
+                  {...toCard(req)}
+                  onAccept={async () => {
+                    if (!user) return
+                    await acceptRequest({ requestId: req.id, donorUid: user.uid })
+                    setAccepted(prev => [...prev, req])
+                    setRequests(p => p.filter(r => r.id !== req.id))
+                  }}
                   onIgnore={() => setRequests(p => p.filter(r => r.id !== req.id))}
                 />
               ))}
@@ -54,10 +82,10 @@ export default function DonorRequests() {
                 </div>
               )}
 
-              {requests.length === 0 && accepted.length === 0 && (
+              {(loading || (requests.length === 0 && accepted.length === 0)) && (
                 <GlassCard className="p-10 text-center">
                   <p className="text-4xl mb-3">🔍</p>
-                  <p className="text-white/60">No requests right now</p>
+                  <p className="text-white/60">{loading ? 'Loading requests…' : 'No requests right now'}</p>
                   <p className="text-white/30 text-sm mt-1">Check back soon!</p>
                 </GlassCard>
               )}

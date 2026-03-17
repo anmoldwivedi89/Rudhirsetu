@@ -2,11 +2,12 @@ import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  Droplets, LayoutDashboard, User, Bell, History,
+  LayoutDashboard, User, Bell, History,
   PlusCircle, ClipboardList, Users, Settings,
   LogOut, ChevronLeft, ChevronRight, Shield,
   Code, Activity, Menu, X
 } from 'lucide-react'
+import LogoMark from './LogoMark'
 
 const navGroups = {
   donor: [
@@ -36,10 +37,10 @@ export default function Sidebar({ role = 'donor' }) {
   return (
     <>
       {/* Mobile top bar */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-50 glass border-b border-white/5 px-4 py-3 flex items-center justify-between">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-50 glass border-b border-white/10 px-4 py-3 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-blood-500 flex items-center justify-center glow-red-sm">
-            <Droplets size={14} className="text-white" />
+            <LogoMark className="w-5 h-5" />
           </div>
           <span className="font-syne font-extrabold text-xl tracking-tight text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.45)]">
             Rudhir<span className="text-blood-500">Setu</span>
@@ -70,12 +71,12 @@ export default function Sidebar({ role = 'donor' }) {
               animate={{ x: 0 }}
               exit={{ x: -280 }}
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              className="md:hidden fixed top-0 left-0 bottom-0 w-[260px] glass border-r border-white/5 z-50 flex flex-col overflow-y-auto"
+              className="md:hidden fixed top-0 left-0 bottom-0 w-[260px] glass border-r border-white/10 z-50 flex flex-col overflow-y-auto"
             >
               {/* Logo */}
               <div className="flex items-center gap-3 px-4 py-5 border-b border-white/5">
                 <div className="w-9 h-9 rounded-xl bg-blood-500 flex items-center justify-center shrink-0 glow-red-sm">
-                  <Droplets size={16} className="text-white" />
+                  <LogoMark className="w-6 h-6" />
                 </div>
                 <span className="font-syne font-extrabold text-xl tracking-tight text-white whitespace-nowrap drop-shadow-[0_2px_10px_rgba(0,0,0,0.45)]">
                   Rudhir<span className="text-blood-500">Setu</span>
@@ -130,12 +131,12 @@ export default function Sidebar({ role = 'donor' }) {
       <motion.aside
         animate={{ width: collapsed ? 72 : 240 }}
         transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-        className="hidden md:flex flex-col h-screen sticky top-0 glass border-r border-white/5 z-40 overflow-hidden"
+        className="hidden md:flex flex-col h-screen sticky top-0 glass border-r border-white/10 z-40 overflow-hidden"
       >
         {/* Logo */}
         <div className="flex items-center gap-3 px-4 py-5 border-b border-white/5">
           <div className="w-9 h-9 rounded-xl bg-blood-500 flex items-center justify-center shrink-0 glow-red-sm">
-            <Droplets size={16} className="text-white" />
+            <LogoMark className="w-6 h-6" />
           </div>
           <AnimatePresence>
             {!collapsed && (

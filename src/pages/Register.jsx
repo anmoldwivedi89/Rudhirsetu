@@ -1,10 +1,14 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Droplets, User, Mail, Lock, Phone, MapPin, ChevronRight, CheckCircle } from 'lucide-react'
-import { PageEnter, PrimaryBtn, BloodBadge } from '../components/UI'
-import { auth } from '../firebase'
+import { User, Mail, Lock, Phone, MapPin, ChevronRight, CheckCircle } from 'lucide-react'
+import { PageEnter, PrimaryBtn } from '../components/UI'
+import { auth, db } from '../firebase'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { doc, serverTimestamp, setDoc } from 'firebase/firestore'
+import { getDashboardPath, ROLES } from '../lib/roles'
+import { useNavigate } from 'react-router-dom'
+import LogoMark from '../components/LogoMark'
 
 const bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
 
@@ -13,17 +17,42 @@ export default function Register() {
   const [step, setStep] = useState(1)
   const [bloodGroup, setBloodGroup] = useState('')
   const [loading, setLoading] = useState(false)
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [phone, setPhone] = useState('')
+  const [location, setLocation] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const navigate = useNavigate()
+
+  const fullName = useMemo(() => `${firstName} ${lastName}`.trim(), [firstName, lastName])
 
   const handleNext = async () => {
     if (step < 2) { setStep(2); return }
     setLoading(true)
     setError('')
     try {
-      await createUserWithEmailAndPassword(auth, email, password)
-      window.location.href = role === 'donor' ? '/donor/dashboard' : role === 'hospital' ? '/hospital/dashboard' : '/patient/dashboard'
+      const cred = await createUserWithEmailAndPassword(auth, email, password)
+
+      const safeRole = role === 'hospital'
+        ? ROLES.hospital
+        : role === 'patient'
+          ? ROLES.patient
+          : ROLES.donor
+
+      await setDoc(doc(db, 'users', cred.user.uid), {
+        role: safeRole,
+        name: fullName || null,
+        email: email || cred.user.email || null,
+        phone: phone || null,
+        location: location || null,
+        bloodGroup: safeRole === ROLES.donor ? (bloodGroup || null) : null,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      }, { merge: true })
+
+      navigate(getDashboardPath(safeRole), { replace: true })
     } catch (err) {
       setError(err.message)
     } finally {
@@ -40,7 +69,7 @@ export default function Register() {
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
             <Link to="/" className="inline-flex items-center gap-2 mb-4">
               <div className="w-10 h-10 rounded-xl bg-blood-500 flex items-center justify-center glow-red-sm">
-                <Droplets size={20} className="text-white" />
+                <LogoMark className="w-7 h-7" />
               </div>
               <span className="font-syne font-black text-2xl">Rudhir<span className="text-blood-500">Setu</span></span>
             </Link>
@@ -106,12 +135,24 @@ export default function Register() {
                       <label className="text-white/50 text-xs mb-1.5 block">FIRST NAME</label>
                       <div className="relative">
                         <User size={14} className="absolute left-3 top-3.5 text-white/30" />
-                        <input type="text" placeholder="Rahul" className="w-full bg-white/5 border border-white/10 focus:border-blood-500/50 rounded-xl pl-9 pr-3 py-3 text-white text-sm outline-none placeholder:text-white/20 transition-colors" />
+                        <input
+                          type="text"
+                          placeholder="Rahul"
+                          value={firstName}
+                          onChange={(e) => setFirstName(e.target.value)}
+                          className="w-full bg-white/5 border border-white/10 focus:border-blood-500/50 rounded-xl pl-9 pr-3 py-3 text-white text-sm outline-none placeholder:text-white/20 transition-colors"
+                        />
                       </div>
                     </div>
                     <div>
                       <label className="text-white/50 text-xs mb-1.5 block">LAST NAME</label>
-                      <input type="text" placeholder="Sharma" className="w-full bg-white/5 border border-white/10 focus:border-blood-500/50 rounded-xl px-3 py-3 text-white text-sm outline-none placeholder:text-white/20 transition-colors" />
+                      <input
+                        type="text"
+                        placeholder="Sharma"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 focus:border-blood-500/50 rounded-xl px-3 py-3 text-white text-sm outline-none placeholder:text-white/20 transition-colors"
+                      />
                     </div>
                   </div>
 
@@ -127,7 +168,13 @@ export default function Register() {
                     <label className="text-white/50 text-xs mb-1.5 block">PHONE</label>
                     <div className="relative">
                       <Phone size={14} className="absolute left-3 top-3.5 text-white/30" />
-                      <input type="tel" placeholder="+91 98765 43210" className="w-full bg-white/5 border border-white/10 focus:border-blood-500/50 rounded-xl pl-9 pr-3 py-3 text-white text-sm outline-none placeholder:text-white/20 transition-colors" />
+                      <input
+                        type="tel"
+                        placeholder="+91 98765 43210"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 focus:border-blood-500/50 rounded-xl pl-9 pr-3 py-3 text-white text-sm outline-none placeholder:text-white/20 transition-colors"
+                      />
                     </div>
                   </div>
                 </motion.div>
@@ -165,7 +212,13 @@ export default function Register() {
                     <label className="text-white/50 text-xs mb-1.5 block">CITY / LOCATION</label>
                     <div className="relative">
                       <MapPin size={14} className="absolute left-3 top-3.5 text-white/30" />
-                      <input type="text" placeholder="Mumbai, Maharashtra" className="w-full bg-white/5 border border-white/10 focus:border-blood-500/50 rounded-xl pl-9 pr-3 py-3 text-white text-sm outline-none placeholder:text-white/20 transition-colors" />
+                      <input
+                        type="text"
+                        placeholder="Mumbai, Maharashtra"
+                        value={location}
+                        onChange={(e) => setLocation(e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 focus:border-blood-500/50 rounded-xl pl-9 pr-3 py-3 text-white text-sm outline-none placeholder:text-white/20 transition-colors"
+                      />
                     </div>
                   </div>
 
