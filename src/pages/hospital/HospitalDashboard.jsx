@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import EmergencyModal from '../../components/EmergencyModal'
 import { PageEnter, GlassCard, StatCard, SectionTitle, BloodBadge, UrgencyTag } from '../../components/UI'
 import { useAuth } from '../../contexts/AuthContext'
-import { listDonors } from '../../lib/firestoreUsers'
+import { listDonors, updateUserProfile } from '../../lib/firestoreUsers'
 import { acceptPatientRequestByHospital, listOpenPatientRequests } from '../../lib/firestoreRequests'
 import { formatKm, haversineKm } from '../../lib/geo'
 
@@ -47,6 +47,8 @@ export default function HospitalDashboard() {
   const [accepting, setAccepting] = useState(null) // request
   const [acceptUnits, setAcceptUnits] = useState('1')
   const [acceptLoading, setAcceptLoading] = useState(false)
+  const [approvingDonorId, setApprovingDonorId] = useState(null)
+  const [rejectingDonorId, setRejectingDonorId] = useState(null)
 
   useEffect(() => {
     let active = true
@@ -301,15 +303,40 @@ export default function HospitalDashboard() {
                     <p className="text-white/40 text-xs">{d.bloodGroup || '—'} · {d.location || '—'}</p>
                   </div>
                   <div className="flex gap-2">
-                    <motion.button whileTap={{ scale: 0.95 }} className="text-xs px-3 py-1.5 rounded-lg glass text-white/40 hover:text-red-400 transition-colors">
-                      Reject
+                    <motion.button
+                      whileTap={{ scale: 0.95 }}
+                      disabled={!!rejectingDonorId || !!approvingDonorId}
+                      onClick={async () => {
+                        if (!d.id) return
+                        setRejectingDonorId(d.id)
+                        try {
+                          await updateUserProfile(d.id, { donorApproved: false, donorReviewedBy: profile?.name || 'Hospital' })
+                          setDonors(prev => prev.filter(x => x.id !== d.id))
+                        } finally {
+                          setRejectingDonorId(null)
+                        }
+                      }}
+                      className="text-xs px-3 py-1.5 rounded-lg glass text-white/40 hover:text-red-400 transition-colors disabled:opacity-50"
+                    >
+                      {rejectingDonorId === d.id ? 'Rejecting…' : 'Reject'}
                     </motion.button>
                     <motion.button
                       whileTap={{ scale: 0.95 }}
                       whileHover={{ boxShadow: '0 0 12px rgba(34,197,94,0.3)' }}
-                      className="text-xs px-3 py-1.5 rounded-lg bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30 transition-all"
+                      disabled={!!approvingDonorId || !!rejectingDonorId}
+                      onClick={async () => {
+                        if (!d.id) return
+                        setApprovingDonorId(d.id)
+                        try {
+                          await updateUserProfile(d.id, { donorApproved: true, donorReviewedBy: profile?.name || 'Hospital' })
+                          setDonors(prev => prev.filter(x => x.id !== d.id))
+                        } finally {
+                          setApprovingDonorId(null)
+                        }
+                      }}
+                      className="text-xs px-3 py-1.5 rounded-lg bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30 transition-all disabled:opacity-50"
                     >
-                      Approve
+                      {approvingDonorId === d.id ? 'Approving…' : 'Approve'}
                     </motion.button>
                   </div>
                 </motion.div>

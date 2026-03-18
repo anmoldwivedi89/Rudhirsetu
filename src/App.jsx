@@ -40,7 +40,8 @@ export default function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<RoleRedirect fallback="/login" />} />
             <Route path="/find-blood" element={<FindBlood />} />
-            <Route path="/community" element={<RequireAuth><Community /></RequireAuth>} />
+            {/* Community is public – no auth needed */}
+            <Route path="/community" element={<Community />} />
             <Route path="/about" element={<About />} />
             <Route path="/developers" element={<Developers />} />
             {/* Donor */}

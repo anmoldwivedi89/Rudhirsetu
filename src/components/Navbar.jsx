@@ -3,11 +3,13 @@ import { Link, NavLink, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import LogoMark from './LogoMark'
+import { useAuth } from '../contexts/AuthContext'
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const location = useLocation()
+  const { user, profile, role, logout } = useAuth()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
@@ -87,24 +89,55 @@ export default function Navbar() {
 
         {/* Actions */}
         <div className="hidden md:flex items-center gap-3">
-          <Link to="/login">
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              className="text-sm text-white/80 hover:text-white transition-colors px-4 py-2 rounded-xl hover:bg-white/[0.06]"
-            >
-              Sign In
-            </motion.button>
-          </Link>
-          <Link to="/register">
-            <motion.button
-              whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(239,68,68,0.35)' }}
-              whileTap={{ scale: 0.97 }}
-              className="text-sm font-semibold text-white px-5 py-2 rounded-xl transition-all duration-300 bg-gradient-to-r from-blood-500 via-red-500 to-blood-600 hover:shadow-red-500/30"
-            >
-              Get Started
-            </motion.button>
-          </Link>
+          {user ? (
+            <>
+              <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/80">
+                <div className="flex flex-col">
+                  <span className="font-semibold">
+                    {profile?.name || user.email || 'Signed in'}
+                  </span>
+                  {role && (
+                    <span className="text-[11px] text-white/60">
+                      {role === 'donor' && 'Donor'}
+                      {role === 'patient' && 'Patient'}
+                      {role === 'hospital' && 'Hospital'}
+                      {role === 'admin' && 'Admin'}
+                      {!['donor','patient','hospital','admin'].includes(role) && role}
+                    </span>
+                  )}
+                </div>
+              </div>
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={logout}
+                className="text-sm text-white/80 hover:text-white transition-colors px-4 py-2 rounded-xl hover:bg-white/[0.06]"
+              >
+                Sign Out
+              </motion.button>
+            </>
+          ) : (
+            <>
+              <Link to="/login">
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="text-sm text-white/80 hover:text-white transition-colors px-4 py-2 rounded-xl hover:bg-white/[0.06]"
+                >
+                  Sign In
+                </motion.button>
+              </Link>
+              <Link to="/register">
+                <motion.button
+                  whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(239,68,68,0.35)' }}
+                  whileTap={{ scale: 0.97 }}
+                  className="text-sm font-semibold text-white px-5 py-2 rounded-xl transition-all duration-300 bg-gradient-to-r from-blood-500 via-red-500 to-blood-600 hover:shadow-red-500/30"
+                >
+                  Get Started
+                </motion.button>
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile Toggle */}
@@ -169,24 +202,54 @@ export default function Navbar() {
                     ))}
                   </div>
 
-                  <div className="mt-4 grid grid-cols-2 gap-3 border-t border-white/[0.08] pt-4">
-                    <Link to="/login" onClick={() => setMobileOpen(false)}>
-                      <motion.button
-                        whileTap={{ scale: 0.98 }}
-                        className="w-full rounded-2xl border border-white/[0.10] bg-white/[0.06] px-4 py-3 text-sm font-semibold text-white/85 hover:text-white transition-colors"
-                      >
-                        Sign In
-                      </motion.button>
-                    </Link>
-                    <Link to="/register" onClick={() => setMobileOpen(false)}>
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="w-full rounded-2xl px-4 py-3 text-sm font-semibold text-white transition-all duration-300 bg-gradient-to-r from-blood-500 via-red-500 to-blood-600 hover:shadow-[0_14px_35px_rgba(239,68,68,0.25)]"
-                      >
-                        Get Started
-                      </motion.button>
-                    </Link>
+                  <div className="mt-4 border-t border-white/[0.08] pt-4">
+                    {user ? (
+                      <div className="flex flex-col gap-3">
+                        <div className="flex items-start justify-between gap-3 rounded-2xl border border-white/[0.10] bg-white/[0.06] px-4 py-3">
+                          <div className="flex flex-col text-left">
+                            <span className="text-sm font-semibold text-white">
+                              {profile?.name || user.email || 'Signed in'}
+                            </span>
+                            {role && (
+                              <span className="text-[11px] text-white/60 mt-0.5">
+                                {role === 'donor' && 'Donor'}
+                                {role === 'patient' && 'Patient'}
+                                {role === 'hospital' && 'Hospital'}
+                                {role === 'admin' && 'Admin'}
+                                {!['donor','patient','hospital','admin'].includes(role) && role}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <motion.button
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => { logout(); setMobileOpen(false) }}
+                          className="w-full rounded-2xl border border-white/[0.10] bg-white/[0.04] px-4 py-3 text-sm font-semibold text-white/85 hover:text-white transition-colors"
+                        >
+                          Sign Out
+                        </motion.button>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-3">
+                        <Link to="/login" onClick={() => setMobileOpen(false)}>
+                          <motion.button
+                            whileTap={{ scale: 0.98 }}
+                            className="w-full rounded-2xl border border-white/[0.10] bg-white/[0.06] px-4 py-3 text-sm font-semibold text-white/85 hover:text-white transition-colors"
+                          >
+                            Sign In
+                          </motion.button>
+                        </Link>
+                        <Link to="/register" onClick={() => setMobileOpen(false)}>
+                          <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            className="w-full rounded-2xl px-4 py-3 text-sm font-semibold text-white transition-all duration-300 bg-gradient-to-r from-blood-500 via-red-500 to-blood-600 hover:shadow-[0_14px_35px_rgba(239,68,68,0.25)]"
+                          >
+                            Get Started
+                          </motion.button>
+                        </Link>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

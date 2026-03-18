@@ -36,6 +36,8 @@ export default function Community() {
   const [err, setErr] = useState('')
 
   const [form, setForm] = useState({
+    name: '',
+    phone: '',
     bloodGroup: '',
     units: '1',
     urgency: 'critical',
@@ -103,38 +105,52 @@ export default function Community() {
   }
 
   const createPost = async () => {
-    if (!user?.uid) {
-      // Show a clear message if user is not logged in
-      window.alert('Please login first, then come back to Community to post.');
-      setErr('Please login first, then come back to Community to post.');
-      return
-    }
     setErr('')
     const type = tab === 'donors' ? 'donor_offer' : 'patient_request'
     if (!form.bloodGroup) { setErr('Please select blood group'); return }
     if (type === 'donor_offer' && !form.consent) { setErr('Consent required to post as donor'); return }
 
     setCreating(true)
+    const payload = {
+      type,
+      createdBy: user?.uid || `anon-${Date.now()}`,
+      role: profile?.role || null,
+      // Use only explicit form values; don't leak profile defaults
+      name: (form.name || '').trim() || null,
+      phone: (form.phone || '').trim() || null,
+      bloodGroup: form.bloodGroup,
+      units: type === 'patient_request' ? form.units : null,
+      urgency: type === 'patient_request' ? form.urgency : null,
+      locationText: (form.locationText || '').trim() || profile?.location || null,
+      geo: formGeo || profile?.geo || null,
+      message: form.message || null,
+      consent: type === 'donor_offer' ? true : null,
+    }
     try {
-      await createCommunityPost({
-        type,
-        createdBy: user.uid,
-        role: profile?.role || null,
-        name: profile?.name || null,
-        phone: profile?.phone || null,
-        bloodGroup: form.bloodGroup,
-        units: type === 'patient_request' ? form.units : null,
-        urgency: type === 'patient_request' ? form.urgency : null,
-        locationText: (form.locationText || '').trim() || profile?.location || null,
-        geo: formGeo || profile?.geo || null,
-        message: form.message || null,
-        consent: type === 'donor_offer' ? true : null,
-      })
-      setForm({ bloodGroup: '', units: '1', urgency: 'critical', message: '', locationText: '', consent: false })
+      await createCommunityPost(payload)
+      setForm({ name: '', phone: '', bloodGroup: '', units: '1', urgency: 'critical', message: '', locationText: '', consent: false })
       setFormGeo(null)
       await refresh()
     } catch (e) {
-      setErr(e?.message || 'Failed to create post')
+      // Frontend-only fallback: even if Firestore blocks (rules / index),
+      // still show the post immediately in the UI for demo.
+      console.error('Community post failed, showing locally only:', e)
+      const msg = e?.message || ''
+      if (msg.includes('Missing or insufficient permissions') || msg.includes('requires an index')) {
+        const localPost = {
+          id: `local-${Date.now()}`,
+          status: 'open',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...payload,
+        }
+        setPosts(prev => [localPost, ...prev])
+        setForm({ name: '', phone: '', bloodGroup: '', units: '1', urgency: 'critical', message: '', locationText: '', consent: false })
+        setFormGeo(null)
+        setErr('Posted locally (backend locked) – visible on this device.')
+      } else {
+        setErr(msg || 'Failed to create post')
+      }
     } finally {
       setCreating(false)
     }
@@ -345,6 +361,28 @@ export default function Community() {
                   </div>
 
                   <div className="flex flex-col gap-3">
+                    <div>
+                      <label className="text-gray-400 text-xs block mb-1">Name</label>
+                      <div className="relative">
+                        <input
+                          value={form.name}
+                          onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))}
+                          placeholder="Enter your name"
+                          className="w-full h-12 bg-white/5 border border-white/10 rounded-xl px-4 text-white text-sm outline-none placeholder:text-gray-400 focus:border-blood-500/50 focus:ring-2 focus:ring-blood-500/25 transition-all"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-gray-400 text-xs block mb-1">Phone (optional)</label>
+                      <div className="relative">
+                        <input
+                          value={form.phone}
+                          onChange={(e) => setForm(f => ({ ...f, phone: e.target.value }))}
+                          placeholder="Enter phone number"
+                          className="w-full h-12 bg-white/5 border border-white/10 rounded-xl px-4 text-white text-sm outline-none placeholder:text-gray-400 focus:border-blood-500/50 focus:ring-2 focus:ring-blood-500/25 transition-all"
+                        />
+                      </div>
+                    </div>
                     <div>
                       <label className="text-gray-400 text-xs block mb-1">Blood Group *</label>
                       <div className="relative">
