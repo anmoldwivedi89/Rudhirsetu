@@ -6,6 +6,7 @@ import { PageEnter, GlassCard, PrimaryBtn, SectionTitle } from '../../components
 import { useAuth } from '../../contexts/AuthContext'
 import { updateUserProfile } from '../../lib/firestoreUsers'
 import FullScreenLoader from '../../components/FullScreenLoader'
+import BlockchainBadge from '../../components/BlockchainBadge'
 
 function InfoItem({ icon: Icon, label, value }) {
   return (
@@ -105,11 +106,14 @@ export default function HospitalProfile() {
             </div>
             <div>
               <h2 className="font-syne text-xl font-bold text-white">{profile?.name || 'Hospital Profile'}</h2>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex flex-wrap items-center gap-2 mt-1">
                 <span className="text-white/40 text-xs bg-white/5 border border-white/10 px-2 py-0.5 rounded-full flex items-center gap-1">
                   <Building2 size={10} /> Hospital
                 </span>
-                <span className="text-green-400 text-xs bg-green-500/10 border border-green-500/20 px-2 py-0.5 rounded-full">✓ Active</span>
+                <span className="text-green-400 text-xs bg-green-500/10 border border-green-500/20 px-2 py-0.5 rounded-full">
+                  ✓ Active
+                </span>
+                <BlockchainBadge hospitalAddress={profile?.ethAddress || null} />
               </div>
             </div>
             <motion.button
