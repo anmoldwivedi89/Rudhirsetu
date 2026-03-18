@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState, useRef } from 'react'
-import { motion } from 'framer-motion'
-import { Camera, Edit2, Save, MapPin, Phone, Calendar, Droplets, LogOut } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Camera, Edit2, Save, MapPin, Phone, Calendar, Droplets, LogOut, Brain } from 'lucide-react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import Sidebar from '../../components/Sidebar'
 import { PageEnter, BloodBadge, GlassCard, PrimaryBtn, SectionTitle } from '../../components/UI'
 import { useAuth } from '../../contexts/AuthContext'
 import { updateUserProfile } from '../../lib/firestoreUsers'
 import FullScreenLoader from '../../components/FullScreenLoader'
+import useDonorPrediction from '../../hooks/useDonorPrediction'
+import DonorPredictionCard from '../../components/DonorPredictionCard'
 
 export default function DonorProfile() {
   const [editing, setEditing] = useState(false)
@@ -18,6 +20,8 @@ export default function DonorProfile() {
   const fileRef = useRef(null)
   const [form, setForm] = useState({ name: '', bloodGroup: '', phone: '', location: '', dob: '', weight: '' })
   const [medical, setMedical] = useState({ diabetes: null, alcohol: null, smoking: null })
+  const { prediction, loading: aiLoading, error: aiError, refresh: refreshPrediction } = useDonorPrediction(profile)
+  const [aiUpdated, setAiUpdated] = useState(false)
 
   useEffect(() => {
     if (!profile) return
@@ -69,6 +73,10 @@ export default function DonorProfile() {
         },
       })
       setEditing(false)
+      // Refresh AI prediction after profile change
+      refreshPrediction()
+      setAiUpdated(true)
+      setTimeout(() => setAiUpdated(false), 3000)
     } finally {
       setSaving(false)
     }
@@ -197,6 +205,26 @@ export default function DonorProfile() {
                 </motion.div>
               )}
             </GlassCard>
+
+            {/* AI Prediction */}
+            <div className="mt-4">
+              <div className="flex items-center gap-2 mb-3">
+                <SectionTitle sub="Powered by TensorFlow.js">AI Donation Prediction</SectionTitle>
+                <AnimatePresence>
+                  {aiUpdated && (
+                    <motion.span
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      className="text-[10px] bg-purple-500/20 text-purple-400 border border-purple-500/30 px-2 py-0.5 rounded-full flex items-center gap-1"
+                    >
+                      <Brain size={10} /> Updated
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </div>
+              <DonorPredictionCard prediction={prediction} loading={aiLoading} error={aiError} />
+            </div>
 
             {/* Logout */}
             <motion.button

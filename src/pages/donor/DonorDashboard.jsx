@@ -8,6 +8,8 @@ import {
   RequestCard, NotifItem, AchievementBadge, UrgencyTag
 } from '../../components/UI'
 import { useAuth } from '../../contexts/AuthContext'
+import DonorPredictionCard from '../../components/DonorPredictionCard'
+import useDonorPrediction from '../../hooks/useDonorPrediction'
 
 const nearbyRequests = [
   { id: 1, bloodType: 'B+', distance: '0.8 km', urgency: 'critical', hospital: 'Apollo Mumbai', time: '2 min ago' },
@@ -37,6 +39,7 @@ export default function DonorDashboard() {
   const [accepted, setAccepted] = useState([])
   const [modalOpen, setModalOpen] = useState(false)
   const { profile } = useAuth()
+  const { prediction, loading: aiLoading, error: aiError } = useDonorPrediction(profile)
 
   const displayName = profile?.name || 'Donor'
   const displayLocation = profile?.location || '—'
@@ -193,6 +196,8 @@ export default function DonorDashboard() {
 
               {/* Right Panel */}
               <div className="flex flex-col gap-4">
+                {/* AI Prediction */}
+                <DonorPredictionCard prediction={prediction} loading={aiLoading} error={aiError} />
                 {/* Eligibility Card */}
                 <GlassCard className="p-5">
                   <h3 className="font-syne font-bold text-white mb-4">Eligibility Status</h3>

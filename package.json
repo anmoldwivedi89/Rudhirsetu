@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tensorflow/tfjs": "^4.22.0",
     "firebase": "^12.10.0",
     "framer-motion": "^10.16.4",
     "lucide-react": "^0.294.0",
