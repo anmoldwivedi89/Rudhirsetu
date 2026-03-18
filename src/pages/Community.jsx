@@ -103,7 +103,12 @@ export default function Community() {
   }
 
   const createPost = async () => {
-    if (!user?.uid) return
+    if (!user?.uid) {
+      // Show a clear message if user is not logged in
+      window.alert('Please login first, then come back to Community to post.');
+      setErr('Please login first, then come back to Community to post.');
+      return
+    }
     setErr('')
     const type = tab === 'donors' ? 'donor_offer' : 'patient_request'
     if (!form.bloodGroup) { setErr('Please select blood group'); return }

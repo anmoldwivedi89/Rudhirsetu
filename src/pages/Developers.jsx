@@ -5,9 +5,9 @@ import Navbar from '../components/Navbar'
 import { PageEnter } from '../components/UI'
 
 const developers = [
-  { name: 'Shobhit Asthana', phone: '+91 6388095158' },
-  { name: 'Anmol', phone: '+91 751 881 2885' },
-  { name: 'Amber', phone: '+91 83039 95618' },
+  { name: 'Shobhit Asthana', phone: '+91 6388095158', roleTag: 'UI / UX Designer' },
+  { name: 'Anmol', phone: '+91 751 881 2885', roleTag: 'Full Stack Developer' },
+  { name: 'Amber', phone: '+91 83039 95618', roleTag: 'AI & Blockchain' },
 ]
 
 function initials(name) {
@@ -63,7 +63,7 @@ function DeveloperCard({ dev, index }) {
             </a>
 
             <span className="text-xs px-3 py-1.5 rounded-xl bg-white/5 text-white/70 border border-white/10">
-              Full Stack Developer
+              {dev.roleTag || 'Developer'}
             </span>
           </div>
         </div>
