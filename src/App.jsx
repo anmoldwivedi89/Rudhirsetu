@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -28,6 +28,24 @@ import HospitalLayout from './pages/hospital/HospitalLayout'
 import HospitalRequests from './pages/hospital/Requests'
 import HospitalHistory from './pages/hospital/History'
 import HospitalProfile from './pages/hospital/Profile'
+import NeedHelpChatbot from './components/NeedHelpChatbot'
+
+function ChatbotGate() {
+  const { pathname } = useLocation()
+
+  const hidden = pathname === '/login' || pathname === '/register'
+  if (hidden) return null
+
+  const show =
+    pathname === '/' ||
+    pathname === '/dashboard' ||
+    pathname === '/donor/dashboard' ||
+    pathname === '/hospital/dashboard' ||
+    pathname === '/patient/dashboard'
+
+  if (!show) return null
+  return <NeedHelpChatbot />
+}
 
 export default function App() {
   return (
@@ -103,6 +121,7 @@ export default function App() {
         </div>
 
         <BottomNav />
+        <ChatbotGate />
       </BrowserRouter>
     </ErrorBoundary>
   )
