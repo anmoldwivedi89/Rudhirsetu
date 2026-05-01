@@ -7,7 +7,7 @@
 
 Role is stored in **Firestore** at `users/{uid}` under the field `role`.
 
-### File structure (important parts)
+### Filestructures (important parts)
 - `src/firebase.js`: Firebase init, exports `auth` and `db`
 - `src/contexts/AuthContext.jsx`: global auth state + loads `users/{uid}` profile
 - `src/components/ProtectedRoute.jsx`: route guards
